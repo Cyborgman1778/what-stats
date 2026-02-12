@@ -1,2 +1,2 @@
-# what-stats
+# WhatStats
 WhatsStats by CyborgApps
