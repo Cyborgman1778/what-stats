@@ -1,0 +1,1 @@
+"""WhatStats backend application package."""
