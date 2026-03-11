@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Tests y caches locales
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDEs / sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Variables de entorno locales
+.env
+.env.*
+
+# Documentación y archivos no necesarios en build
+README.md
+
+# Base de datos local
+*.sqlite3
+*.db
+
+# Tests
+tests/
+
+.agentignore
