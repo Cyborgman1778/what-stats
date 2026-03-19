@@ -1,2 +1,3 @@
 # WhatStats
 WhatsStats by CyborgApps
+.
