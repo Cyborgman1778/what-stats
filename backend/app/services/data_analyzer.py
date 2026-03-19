@@ -4,6 +4,7 @@ from typing import Dict, Any
 #Dividimos los calculos de las diferentes estadisticas en diferentes funciones para un codigo mas limpo
 
 
+
 def _get_basic_stats(chat_df: pd.DataFrame) -> Dict[str, Any]:
     """Calcula mensajes totales y participantes."""
     return {
