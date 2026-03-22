@@ -4,3 +4,5 @@ pandas
 python-multipart
 pydantic-settings
 slowapi
+nltk==3.8.1
+emoji==2.10.1

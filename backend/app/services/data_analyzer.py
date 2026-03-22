@@ -1,10 +1,22 @@
 import pandas as pd
+import re
+from collections import Counter
+import emoji
 from typing import Dict, Any
+from app.utils.constants import CHAT_STOPWORDS
+from nltk.corpus import stopwords
+import nltk
+
+nltk.downloads("stopwords")
 
 #Dividimos los calculos de las diferentes estadisticas en diferentes funciones para un codigo mas limpo
 
+def _get_filtered_df_by_user(chat_df: pd.DataFrame, user: str) -> pd.DataFrame:
+    """Devuelve un sub-dataframe tomando solo los registros de un usuario en concreto"""
+    return chat_df[chat_df['Author'] == user]
 
-def _get_basic_stats(chat_df: pd.DataFrame) -> Dict[str, Any]:
+
+def get_basic_stats(chat_df: pd.DataFrame) -> Dict[str, Any]:
     """Calcula mensajes totales y participantes."""
     return {
         "total_messages": len(chat_df),
@@ -16,20 +28,24 @@ def _get_basic_stats(chat_df: pd.DataFrame) -> Dict[str, Any]:
         "n_participants": chat_df['Author'].nunique()
     }
 
-def _get_messages_per_user(chat_df: pd.DataFrame) -> Dict[str, Any]:
+def get_messages_per_user(chat_df: pd.DataFrame) -> Dict[str, Any]:
     """Calcula cuantos mensajes envia cada usuario"""
     return {
         "n_messages_per_user": chat_df['Author'].value_counts().to_dict()
     }
 
-def _get_hot_hours(chat_df: pd.DataFrame) -> Dict[str, Any]:
+# Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
+def get_hot_hours(chat_df: pd.DataFrame, user: str) -> Dict[str, Any]:
     """Cuenta los mensajes que hay en cada hora del dia"""
 
-    # 1. chat_df['Timestampt'].dt.hour extrae solo la hora (0 a 23) de cada mensaje.
+    if user:
+        chat_df = _get_filtered_df_by_user(chat_df, user)
+
+    # 1. chat_df['Timestamp'].dt.hour extrae solo la hora (0 a 23) de cada mensaje.
     # 2. value_counts() cuenta cuántos mensajes hay en cada hora.
     # 3. sort_index() ordena el resultado de 0 a 23 (vital para que el gráfico salga ordenado).
     # 4. to_dict() lo convierte al formato JSON.
-    messages_per_hour = chat_df['Timestampt'].dt.hour.value_counts().sort_index().to_dict()
+    messages_per_hour = chat_df['Timestamp'].dt.hour.value_counts().sort_index().to_dict()
 
     #ponemos la fecha en formato legible
     hot_hours = {
@@ -40,24 +56,28 @@ def _get_hot_hours(chat_df: pd.DataFrame) -> Dict[str, Any]:
         "hot_hours": hot_hours
     }
 
-#TODO: Añadir logica para filtrar por usuario
-def _get_calendar_stats(chat_df: pd.DataFrame, top_n: int = 10) -> Dict[str, Any]:
+# Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
+def get_calendar_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[str, Any]:
     """Obtener numero de mensajes por fechas (dia/mes/año, mes/año, año)"""
 
+    if user:
+        chat_df = _get_filtered_df_by_user(chat_df, user)
+    
+
     # Obtenemos los mensajes por fechas (dia/mes/año), lo ordenamos y hacemos la fecha legible
-    day = chat_df['Timestampt'].dt.date.value_counts().sort_index()
+    day = chat_df['Timestamp'].dt.date.value_counts().sort_index()
     messages_per_day = {date.strftime("%d/%m/%Y"): count for date, count in day.items()}
 
     # Obtenemos los mensajes por meses (mes/año), lo ordenamos y hacemos la fecha legible
-    month = chat_df['Timestampt'].dt.to_period('M').value_counts().sort_index()
+    month = chat_df['Timestamp'].dt.to_period('M').value_counts().sort_index()
     messages_per_month = {period.strftime('%m/%Y'): count for period, count in month.items()}
 
     # Obtenemos los mensajes por años, lo ordenamos y hacemos la fecha legible
-    year = chat_df['Timestampt'].dt.year.value_counts().sort_index()
+    year = chat_df['Timestamp'].dt.year.value_counts().sort_index()
     messages_per_year = {str(period): count for period, count in year.items()}
 
     # Obtenemos los "top_n" dias con mayor cantidad de mensajes
-    top = chat_df['Timestampt'].dt.date.value_counts().nlargest(top_n)
+    top = chat_df['Timestamp'].dt.date.value_counts().nlargest(top_n)
     top_messages_per_day = {date.strftime("%d/%m/%Y"): count for date, count in top.items()}
 
     return {
@@ -66,6 +86,48 @@ def _get_calendar_stats(chat_df: pd.DataFrame, top_n: int = 10) -> Dict[str, Any
         "messages_per_year": messages_per_year,
         "top_messages_per_day": top_messages_per_day
     }
+
+# Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
+def get_word_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[str, Any]:
+    """Obtener un top n de las palabras mas usadas en el chat, excluyendo monosilabos y conjunciones"""
+
+    if user:
+        chat_df = _get_filtered_df_by_user(chat_df, user)
+
+    STOPWORDS_ES = set(stopwords.words("spanish"))
+    ALL_STOPWORDS = STOPWORDS_ES.union(CHAT_STOPWORDS)
+
+    # Unimos todos los mensajes en un solo texto (OJO: esto casi duplica el espacio en memoria)
+    text = " ".join(chat_df["Message"].dropna().astype(str))
+
+    # Extraemos palabras en minúsculas, incluyendo acentos y ñ
+    words = re.findall(r"\b[a-záéíóúüàèìòùñ]+\b", text.lower())
+
+    filtered_words = [
+        w for w in words
+        if w not in ALL_STOPWORDS               # Eliminamos las palabras sin sentido
+        and len(w) > 2                          # Eliminamos todas las palabras de 2 letras o menos
+        and not w.isdigit()                     # Eliminamos los numeros
+        and not w.startswith("http")            # Eliminamos links
+    ]
+
+    word_counter = Counter(filtered_words)
+    return dict(word_counter.most_common(top_n))
+
+# Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
+def get_emoji_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[str, Any]:
+    """Obtener un top n de los emojis mas usadas en el chat"""
+
+    if user:
+        chat_df = chat_df[chat_df["Author"] == user]
+
+    text = " ".join(chat_df["Message"].dropna().astype(str))
+    emoji_list = [item["emoji"] for item in emoji.emoji_list(text)]
+    emoji_counter = Counter(emoji_list)
+    return dict(emoji_counter.most_common(top_n))
+
+
+    
 
 def analyze_chat_data(chat_df: pd.DataFrame) -> Dict[str, Any]:
     """
@@ -89,13 +151,13 @@ def analyze_chat_data(chat_df: pd.DataFrame) -> Dict[str, Any]:
         }
 
     # 2. Estadisticas
-    total_messages, participants, total_users = _get_basic_stats(chat_df)
+    total_messages, participants, total_users = get_basic_stats(chat_df)
 
-    n_messages_per_user = _get_messages_per_user(chat_df)
+    n_messages_per_user = get_messages_per_user(chat_df)
 
-    hot_hours = _get_hot_hours(chat_df)
+    hot_hours = get_hot_hours(chat_df)
 
-    messages_per_day, messages_per_month, messages_per_year, top_messages_per_day = _get_calendar_stats(chat_df)
+    messages_per_day, messages_per_month, messages_per_year, top_messages_per_day = get_calendar_stats(chat_df)
 
 
     # 4. TODO: Construimos y devolvemos el diccionario de resultados (RF-05)

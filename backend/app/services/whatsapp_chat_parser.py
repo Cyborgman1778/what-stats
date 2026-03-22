@@ -70,6 +70,6 @@ def parse_chat_to_dataframe(file_bytes: bytes, filename: str) -> pd.DataFrame:
     # Opcional (pero muy recomendado para Pandas): Convertir a datetime
     if not df.empty:
         # Combinamos Date y Time en una sola columna temporal real 
-        df['Timestampt'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], format="mixed", dayfirst=True)
+        df['Timestamp'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], format="mixed", dayfirst=True)
     
     return df
