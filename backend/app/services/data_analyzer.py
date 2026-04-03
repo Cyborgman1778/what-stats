@@ -2,12 +2,12 @@ import pandas as pd
 import re
 from collections import Counter
 import emoji
-from typing import Dict, Any
+from typing import Dict, List, Any
 from app.utils.constants import CHAT_STOPWORDS
 from nltk.corpus import stopwords
 import nltk
 
-nltk.downloads("stopwords")
+nltk.download("stopwords")
 
 #Dividimos los calculos de las diferentes estadisticas en diferentes funciones para un codigo mas limpo
 
@@ -35,7 +35,7 @@ def get_messages_per_user(chat_df: pd.DataFrame) -> Dict[str, Any]:
     }
 
 # Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
-def get_hot_hours(chat_df: pd.DataFrame, user: str) -> Dict[str, Any]:
+def get_hot_hours(chat_df: pd.DataFrame, user: str | None = None) -> Dict[str, Any]:
     """Cuenta los mensajes que hay en cada hora del dia"""
 
     if user:
@@ -57,7 +57,7 @@ def get_hot_hours(chat_df: pd.DataFrame, user: str) -> Dict[str, Any]:
     }
 
 # Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
-def get_calendar_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[str, Any]:
+def get_calendar_stats(chat_df: pd.DataFrame, user: str | None = None, top_n: int = 10) -> Dict[str, Any]:
     """Obtener numero de mensajes por fechas (dia/mes/año, mes/año, año)"""
 
     if user:
@@ -88,7 +88,7 @@ def get_calendar_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dic
     }
 
 # Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
-def get_word_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[str, Any]:
+def get_word_stats(chat_df: pd.DataFrame, user: str | None = None, top_n: int = 10) -> Dict[str, Any]:
     """Obtener un top n de las palabras mas usadas en el chat, excluyendo monosilabos y conjunciones"""
 
     if user:
@@ -115,18 +115,32 @@ def get_word_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[st
     return dict(word_counter.most_common(top_n))
 
 # Se puede obtener estadisticas de un solo usuario pasandole este como parametro, si esta vacio se usaran todos los usuarios del chat
-def get_emoji_stats(chat_df: pd.DataFrame, user: str, top_n: int = 10) -> Dict[str, Any]:
+def get_emoji_stats(chat_df: pd.DataFrame, user: str | None = None, top_n: int = 10) -> Dict[str, Any]:
     """Obtener un top n de los emojis mas usadas en el chat"""
 
     if user:
-        chat_df = chat_df[chat_df["Author"] == user]
+        chat_df = _get_filtered_df_by_user(chat_df, user)
 
     text = " ".join(chat_df["Message"].dropna().astype(str))
     emoji_list = [item["emoji"] for item in emoji.emoji_list(text)]
     emoji_counter = Counter(emoji_list)
     return dict(emoji_counter.most_common(top_n))
 
+#
+def get_length_stats(chat_df: pd.DataFrame, top_n: int = 10) -> List[Dict[str, Any]]:
+    """Obtener un top n de los mensajes mas largos, devolviendo el mensaje, la longitud y el autor"""
+    
+    # Creamos una serie con la longitud de cada mensaje
+    lengths = chat_df["Message"].fillna("").str.len()
 
+    # Agregamos la columna, ordenamos el DataFrame completo y extraemos el top seleccionado
+    chat_df_with_len = chat_df.assign(Length=lengths)
+    chat_df_sorted = chat_df_with_len.sort_values("Length", ascending=False)
+    chat_df_cropped = chat_df_sorted.head(top_n)
+
+    # Seleccionamos solo las columnas necesarias
+    result = chat_df_cropped[["Author", "Message", "Length"]]
+    return result.to_dict(orient="records")
     
 
 def analyze_chat_data(chat_df: pd.DataFrame) -> Dict[str, Any]:
@@ -135,7 +149,7 @@ def analyze_chat_data(chat_df: pd.DataFrame) -> Dict[str, Any]:
     y calcula estadísticas (RF-04).
     
     Args:
-        chat_df (pd.DataFrame): El DataFrame con las columnas Date, Time, Author, Message, Datetime.
+        chat_df (pd.DataFrame): El DataFrame con las columnas Date, Time, Author, Message, Timestamp.
         
     Returns:
         Dict[str, Any]: Un diccionario con las estadísticas calculadas, listo para
