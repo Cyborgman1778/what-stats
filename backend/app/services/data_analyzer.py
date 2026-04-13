@@ -16,11 +16,8 @@ def _get_filtered_df_by_user(chat_df: pd.DataFrame, user: str) -> pd.DataFrame:
     """Devuelve un sub-dataframe tomando solo los registros de un usuario en concreto"""
     return chat_df[chat_df['Author'] == user]
 
-def _record_new_streak(finish_date: date, day_lenght: int, in_grace_period: bool = False) -> Dict[str, Any]:
+def _record_new_streak(finish_date: date, day_lenght: int) -> Dict[str, Any]:
     """Devuelve un diccionario con inicio, fin, y duracion de una racha para la funcion de rachas"""
-
-    if in_grace_period:
-        finish_date = finish_date - timedelta(days=1)
 
     init_date = finish_date - timedelta(days=day_lenght - 1)
 
@@ -197,30 +194,38 @@ def get_streak_stats(chat_df: pd.DataFrame, top_n: int = 3) -> List[Dict[str, An
     daily_user_count = 0
     day_count = 0
     grace_period = False
+    last_confirmed_date = None
 
     for index, row in chat_df_sorted.iterrows():
         act_date = row['Date']
         if index == 0:
             ant_date = act_date
             day_count = 0
-            daily_user_count += 1
+            daily_user_count = 1
             continue
 
         if act_date != ant_date:
             if act_date == ant_date + timedelta(days=1):
                 if daily_user_count == 1: #Si el dia anterior solo ha hablado una persona
                     if grace_period:
-                        if day_count >= 3:
-                            streaks.append(_record_new_streak(ant_date, day_count, grace_period))
+                        if day_count >= 3 and last_confirmed_date is not None:
+                            streaks.append(_record_new_streak(last_confirmed_date, day_count))
                         day_count = 0
+                        last_confirmed_date = None
                         grace_period = False #Se pone false porq ue quiere decir qe ha habido dos dias seguidos con 1 solo usuario
                     else:
                         if day_count > 0:
                             grace_period = True # La unica forma de que grace_period se ponga a True es que el dia anterior haya sido un dia de racha valido (>2 usuarios)
                         else:
                             grace_period = False
-                else:
+                else: 
                     grace_period = False
+            else: # Se rompe la racha por salto de fechas
+                if day_count >= 3 and last_confirmed_date is not None:
+                    streaks.append(_record_new_streak(last_confirmed_date, day_count))
+                day_count = 0
+                last_confirmed_date = None
+                grace_period = False
 
             daily_user_count = 0
 
@@ -231,20 +236,17 @@ def get_streak_stats(chat_df: pd.DataFrame, top_n: int = 3) -> List[Dict[str, An
                 day_count += 1
                 if grace_period:
                     day_count += 1
-            grace_period = False
+                last_confirmed_date = act_date
+                grace_period = False
         elif act_date == ant_date + timedelta(days=1): #Cada vez que entra aqui es que es el primero en hablar despues de un dia donde ya se ha hablado
-            daily_user_count += 1
-        else: #Si entra aqui quiere decir que nadie ha hablado en el dia anterior por tanto se ha roto la racha en ant_date
-            if day_count >= 3:
-                streaks.append(_record_new_streak(ant_date, day_count, grace_period))
-            day_count = 0
             daily_user_count = 1
-            grace_period = False
+        else: #Si entra aqui quiere decir que nadie ha hablado en el dia anterior y este es el primer usuario
+            daily_user_count = 1
 
         ant_date = act_date
 
-    if day_count >= 3:
-        streaks.append(_record_new_streak(ant_date, day_count, grace_period))
+    if day_count >= 3 and last_confirmed_date is not None:
+        streaks.append(_record_new_streak(last_confirmed_date, day_count))
 
     streaks.sort(key=lambda x: x['duration'], reverse=True)
 
@@ -271,26 +273,53 @@ def analyze_chat_data(chat_df: pd.DataFrame) -> Dict[str, Any]:
     # 1. Comprobación de seguridad: Si el DataFrame está vacío, devolvemos ceros
     if chat_df.empty:
         return {
+            "status": "failed",
+            "message": "El chat analizado no contiene mensajes válidos.",
             "total_messages": 0,
-            "total_users": 0,
             "participants": [],
-            "message": "El chat analizado no contiene mensajes válidos."
+            "total_users": 0,
+            "n_messages_per_user": {},
+            "hot_hours": {},
+            "messages_per_day": {},
+            "messages_per_month": {},
+            "messages_per_year": {},
+            "top_messages_per_day": {},
+            "top_words": {},
+            "top_emojis": {},
+            "longest_messages": [],
+            "top_streaks": []
         }
 
     # 2. Estadisticas
-    total_messages, participants, total_users = get_basic_stats(chat_df)
-
+    basic_stats = get_basic_stats(chat_df)
     n_messages_per_user = get_messages_per_user(chat_df)
-
     hot_hours = get_hot_hours(chat_df)
+    calendar_stats = get_calendar_stats(chat_df)
 
-    messages_per_day, messages_per_month, messages_per_year, top_messages_per_day = get_calendar_stats(chat_df)
+    top_words = get_word_stats(chat_df)
+
+    top_emojis = get_emoji_stats(chat_df)
+
+    longest_messages = get_length_stats(chat_df)
+
+    top_streaks = get_streak_stats(chat_df)
 
 
-    # 4. TODO: Construimos y devolvemos el diccionario de resultados (RF-05)
+    # 4. Construimos y devolvemos el diccionario de resultados (RF-05)
     return {
-        "total_messages": total_messages,
-        "total_users": total_users,
-        "participants": participants,
-        "status": "success"
+        "status": "success",
+        "message": "El chat se ha analizado correctamente.",
+        "total_messages": basic_stats["total_messages"],
+        "participants": basic_stats["participants"],
+        "total_users": basic_stats["n_participants"],
+        "n_messages_per_user": n_messages_per_user["n_messages_per_user"],
+        "hot_hours": hot_hours["hot_hours"],
+        "messages_per_day": calendar_stats["messages_per_day"],
+        "messages_per_month": calendar_stats["messages_per_month"],
+        "messages_per_year": calendar_stats["messages_per_year"],
+        "top_messages_per_day": calendar_stats["top_messages_per_day"],
+        "top_words": top_words,
+        "top_emojis": top_emojis,
+        "longest_messages": longest_messages,
+        "top_streaks": top_streaks
     }
