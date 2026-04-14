@@ -12,7 +12,10 @@ ANDROID_PATTERN = re.compile(r"^(\d{1,2}/\d{1,2}/\d{2,4}),\s(\d{1,2}:\d{2})\s-\s
 IOS_PATTERN = re.compile(r"^\[(\d{1,2}/\d{1,2}/\d{2,4}),\s(\d{1,2}:\d{2}:\d{2})\]\s([^:]+):\s(.*)$")
 
 # Patrón para detectar mensajes de multimedia omitida en la exportacion del chat (<Multimedia omitido>)
-OMITTED_PATTERN = re.compile(r"^<.*media.*>$")
+OMITTED_PATTERN = re.compile(
+    r"^[<\[].*(multimedia|media|adjunto|attached|omès|omitido|omis|omit).*?[>\]]$", 
+    re.IGNORECASE
+)
 
 def detect_message_parts(line: str):
     """
