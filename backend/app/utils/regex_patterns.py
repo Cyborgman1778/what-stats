@@ -11,10 +11,13 @@ ANDROID_PATTERN = re.compile(r"^(\d{1,2}/\d{1,2}/\d{2,4}),\s(\d{1,2}:\d{2})\s-\s
 # Nota: iOS incluye corchetes y los segundos en la hora.
 IOS_PATTERN = re.compile(r"^\[(\d{1,2}/\d{1,2}/\d{2,4}),\s(\d{1,2}:\d{2}:\d{2})\]\s([^:]+):\s(.*)$")
 
+# Patrón para detectar mensajes de multimedia omitida en la exportacion del chat (<Multimedia omitido>)
+OMITTED_PATTERN = re.compile(r"^<.*media.*>$")
+
 def detect_message_parts(line: str):
     """
     Intenta hacer match con los formatos conocidos.
-    Retorna (fecha, hora, autor, mensaje) si es exitoso, o None si es una línea de continuación.
+    Devuelve (fecha, hora, autor, mensaje) si es exitoso, o None si es una línea de continuación.
     """
     # Probamos iOS primero
     match = IOS_PATTERN.match(line)
@@ -27,3 +30,12 @@ def detect_message_parts(line: str):
         return match.groups()
     
     return None
+
+def detect_media_message(message: str):
+    """
+    Devuelve true si el mensaje analizado es de multimedia omitido, sino devuelve false
+    """
+    match = OMITTED_PATTERN.match(message)
+    if match:
+        return True
+    return False

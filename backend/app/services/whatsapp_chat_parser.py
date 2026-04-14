@@ -2,7 +2,7 @@ import pandas as pd
 import io
 import zipfile
 from typing import List, Dict, Tuple
-from app.utils.regex_patterns import detect_message_parts
+from app.utils.regex_patterns import detect_message_parts, detect_media_message
 
 """
 Params:
@@ -52,6 +52,10 @@ def parse_chat_to_dataframe(file_bytes: bytes, filename: str) -> pd.DataFrame:
         if parts:
             # Es el inicio de un nuevo mensaje (hizo match con la Regex)
             date, time, author, message = parts
+
+            if detect_media_message(message):
+                continue
+
             parsed_data.append({
                 "Date": date,
                 "Time": time,
