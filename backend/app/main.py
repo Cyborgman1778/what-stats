@@ -1,16 +1,16 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-#aqui hara falta usar APIRouter para poder gestionar los endpoits de endpoints.py
-
+# APIRouter para poder gestionar los endpoits de endpoints.py
+from app.api.endpoints import router
 from app.core.config import settings
+from app.core.rate_limiter import limiter
+
 
 # 1. Inicializar el Rate Limiter (usa la IP del cliente como identificador)
-limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="WhatStats API",
@@ -21,6 +21,8 @@ app = FastAPI(
 # Registrar el manejador de errores cuando alguien se pasa del límite
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+app.include_router(router)
 
 # 2. Configuración de CORS
 app.add_middleware(

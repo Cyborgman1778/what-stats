@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     HOST: str = "127.0.0.1"
     PORT: int = 8000
     
-    ALLOWED_ORIGINS: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: str = "http://127.0.0.1:8080,http://localhost:8080"
     MAX_UPLOAD_SIZE: int = 52428800  # 50 MB en bytes
     RATE_LIMIT_PER_MINUTE: int = 3   # Máximo de peticiones por minuto por IP
 

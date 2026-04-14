@@ -1,13 +1,16 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from app.services.whatsapp_chat_parser import parse_chat_to_dataframe
-# Importaremos el analizador en el siguiente paso
-# from app.services.data_analyzer import analyze_chat_data 
+from app.services import data_analyzer
+from app.core.config import settings
+from app.core.rate_limiter import limiter
+from app.schemas.response_models import AnalyzeChatDataResponse
 
 # Creamos el router (un mini-FastAPI para organizar las rutas)
 router = APIRouter()
 
-@router.post("/upload-chat")
-async def upload_and_analyze_chat(file: UploadFile = File(...)):
+@router.post("/upload-chat", response_model=AnalyzeChatDataResponse)
+@limiter.limit(f"{settings.RATE_LIMIT_PER_MINUTE}/minute")
+async def upload_and_analyze_chat(request: Request, file: UploadFile = File(...)):
     """
     Recibe un archivo exportado de WhatsApp (.txt o .zip), 
     lo procesa en memoria y devuelve estadísticas básicas.
@@ -29,14 +32,12 @@ async def upload_and_analyze_chat(file: UploadFile = File(...)):
         df = parse_chat_to_dataframe(file_bytes, file.filename)
         
         # 4. Cálculos (RF-04): Aquí llamaremos a tu módulo data_analyzer.py
-        # stats = analyze_chat_data(df)
+        stats = data_analyzer.analyze_chat_data(df)
         
         # Por ahora, devolvemos un JSON básico (RF-05) para verificar que el DataFrame se ha creado bien
         return {
             "status": "success",
-            "filename": file.filename,
-            "total_messages_parsed": len(df),
-            "message": "Archivo procesado y destruido de la memoria correctamente."
+            "stats": stats
         }
         
     except ValueError as e:
