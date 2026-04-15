@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WhatStats Visual Test</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --panel: #fffaf2;
+      --panel-strong: #fff;
+      --text: #1f1b18;
+      --muted: #6d6258;
+      --line: #dccfbe;
+      --accent: #b65935;
+      --accent-soft: #f3dfd4;
+      --ok: #1f7a4d;
+      --ok-bg: #ddf3e7;
+      --error: #a12929;
+      --error-bg: #f8dede;
+      --shadow: 0 18px 40px rgba(73, 53, 39, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(182, 89, 53, 0.14), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(94, 129, 96, 0.12), transparent 24%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(980px, calc(100% - 32px));
+      margin: 32px auto;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 28px;
+      background: linear-gradient(135deg, rgba(182, 89, 53, 0.11), rgba(255, 255, 255, 0.72));
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      line-height: 0.95;
+      margin-bottom: 10px;
+    }
+
+    .hero p,
+    .hint,
+    .empty {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .content {
+      display: grid;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .panel {
+      background: var(--panel-strong);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 120ms ease, opacity 120ms ease;
+      justify-self: start;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+      transform: none;
+    }
+
+    .status {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      font-size: 0.95rem;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.ok {
+      color: var(--ok);
+      background: var(--ok-bg);
+      border-color: rgba(31, 122, 77, 0.24);
+    }
+
+    .status.error {
+      color: var(--error);
+      background: var(--error-bg);
+      border-color: rgba(161, 41, 41, 0.24);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .metric {
+      padding: 14px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #fff, #faf3ea);
+      border: 1px solid var(--line);
+    }
+
+    .metric .label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric .value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .json-viewer {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .node {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .node summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 12px 14px;
+      background: #fcf6ee;
+      font-weight: 700;
+    }
+
+    .node summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .node-body {
+      padding: 12px 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(120px, 220px) 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 8px 0;
+      border-bottom: 1px dashed #e7dccd;
+    }
+
+    .row:last-child {
+      border-bottom: 0;
+    }
+
+    .key {
+      color: var(--muted);
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .value {
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #1f1b18;
+      color: #f8f0e3;
+      overflow: auto;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .accent-chip {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        width: min(100% - 18px, 980px);
+        margin: 10px auto 24px;
+      }
+
+      .hero,
+      .content,
+      .panel {
+        padding: 16px;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <div class="hero">
+        <h1>Visual test</h1>
+        <p>Sube un chat de WhatsApp, envialo al backend y revisa la respuesta JSON de forma clara.</p>
+        <span class="accent-chip">Endpoint por defecto: /upload-chat</span>
+      </div>
+
+      <div class="content">
+        <section class="panel">
+          <h2>Enviar archivo</h2>
+          <p class="hint">El formulario envia el fichero como <code>multipart/form-data</code> con la clave <code>file</code>.</p>
+
+          <form id="upload-form">
+            <label>
+              URL del endpoint
+              <input id="endpoint" type="text" value="http://127.0.0.1:8000/upload-chat" spellcheck="false">
+            </label>
+
+            <label>
+              Archivo del chat
+              <input id="chat-file" type="file" accept=".txt,.zip" required>
+            </label>
+
+            <button id="submit-button" type="submit">Enviar y analizar</button>
+          </form>
+
+          <div id="status" class="status" aria-live="polite"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Vista rapida</h2>
+          <p class="hint">Si la respuesta contiene las claves principales, aqui veras un pequeno resumen.</p>
+          <div id="summary" class="summary-grid">
+            <p class="empty">Todavia no hay datos.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Respuesta formateada</h2>
+          <div id="formatted-json" class="json-viewer">
+            <p class="empty">La respuesta JSON aparecera aqui.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>JSON crudo</h2>
+          <pre id="raw-json">Esperando respuesta...</pre>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("upload-form");
+    const endpointInput = document.getElementById("endpoint");
+    const fileInput = document.getElementById("chat-file");
+    const submitButton = document.getElementById("submit-button");
+    const statusBox = document.getElementById("status");
+    const summary = document.getElementById("summary");
+    const formattedJson = document.getElementById("formatted-json");
+    const rawJson = document.getElementById("raw-json");
+
+    function setStatus(type, message) {
+      statusBox.className = `status visible ${type}`;
+      statusBox.textContent = message;
+    }
+
+    function clearStatus() {
+      statusBox.className = "status";
+      statusBox.textContent = "";
+    }
+
+    function metricCard(label, value) {
+      const card = document.createElement("article");
+      card.className = "metric";
+
+      const labelEl = document.createElement("span");
+      labelEl.className = "label";
+      labelEl.textContent = label;
+
+      const valueEl = document.createElement("div");
+      valueEl.className = "value";
+      valueEl.textContent = value;
+
+      card.append(labelEl, valueEl);
+      return card;
+    }
+
+    function renderSummary(data) {
+      summary.innerHTML = "";
+
+      if (!data || typeof data !== "object") {
+        summary.innerHTML = '<p class="empty">La respuesta no es un objeto JSON valido.</p>';
+        return;
+      }
+
+      const cards = [];
+
+      if ("status" in data) {
+        cards.push(metricCard("Estado", String(data.status)));
+      }
+      if ("total_messages" in data) {
+        cards.push(metricCard("Mensajes", String(data.total_messages)));
+      }
+      if ("total_users" in data) {
+        cards.push(metricCard("Usuarios", String(data.total_users)));
+      }
+      if (Array.isArray(data.participants)) {
+        cards.push(metricCard("Participantes", data.participants.join(", ") || "-"));
+      }
+      if ("message" in data) {
+        cards.push(metricCard("Mensaje", String(data.message)));
+      }
+
+      if (cards.length === 0) {
+        summary.innerHTML = '<p class="empty">No se detectaron campos resumen en la respuesta.</p>';
+        return;
+      }
+
+      cards.forEach((card) => summary.appendChild(card));
+    }
+
+    function createPrimitiveRow(key, value) {
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const keyEl = document.createElement("div");
+      keyEl.className = "key";
+      keyEl.textContent = key;
+
+      const valueEl = document.createElement("div");
+      valueEl.className = "value";
+      valueEl.textContent = value === null ? "null" : String(value);
+
+      row.append(keyEl, valueEl);
+      return row;
+    }
+
+    function renderNode(label, value, open = false) {
+      const details = document.createElement("details");
+      details.className = "node";
+      if (open) details.open = true;
+
+      const summaryEl = document.createElement("summary");
+      summaryEl.textContent = label;
+
+      const body = document.createElement("div");
+      body.className = "node-body";
+
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          body.appendChild(createPrimitiveRow("items", "[]"));
+        } else {
+          value.forEach((item, index) => {
+            if (item && typeof item === "object") {
+              body.appendChild(renderNode(`[${index}]`, item));
+            } else {
+              body.appendChild(createPrimitiveRow(`[${index}]`, item));
+            }
+          });
+        }
+      } else if (value && typeof value === "object") {
+        const entries = Object.entries(value);
+        if (entries.length === 0) {
+          body.appendChild(createPrimitiveRow("value", "{}"));
+        } else {
+          entries.forEach(([key, childValue]) => {
+            if (childValue && typeof childValue === "object") {
+              body.appendChild(renderNode(key, childValue));
+            } else {
+              body.appendChild(createPrimitiveRow(key, childValue));
+            }
+          });
+        }
+      } else {
+        body.appendChild(createPrimitiveRow(label, value));
+      }
+
+      details.append(summaryEl, body);
+      return details;
+    }
+
+    function renderFormattedJson(data) {
+      formattedJson.innerHTML = "";
+
+      if (!data || typeof data !== "object") {
+        formattedJson.innerHTML = '<p class="empty">No se pudo renderizar la respuesta formateada.</p>';
+        return;
+      }
+
+      Object.entries(data).forEach(([key, value], index) => {
+        formattedJson.appendChild(renderNode(key, value, index < 2));
+      });
+    }
+
+    async function parseResponse(response) {
+      const text = await response.text();
+      try {
+        const json = JSON.parse(text);
+        return { text: JSON.stringify(json, null, 2), data: json };
+      } catch (error) {
+        return { text: text || "<respuesta vacia>", data: null };
+      }
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearStatus();
+
+      const endpoint = endpointInput.value.trim();
+      const file = fileInput.files[0];
+
+      if (!endpoint) {
+        setStatus("error", "Introduce la URL del endpoint.");
+        return;
+      }
+
+      if (!file) {
+        setStatus("error", "Selecciona primero un archivo .txt o .zip.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando...";
+      rawJson.textContent = "Cargando respuesta...";
+      formattedJson.innerHTML = '<p class="empty">Procesando...</p>';
+      summary.innerHTML = '<p class="empty">Esperando datos...</p>';
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: formData,
+        });
+
+        const parsed = await parseResponse(response);
+        rawJson.textContent = parsed.text;
+
+        if (parsed.data) {
+          renderSummary(parsed.data);
+          renderFormattedJson(parsed.data);
+        } else {
+          summary.innerHTML = '<p class="empty">La respuesta no fue JSON.</p>';
+          formattedJson.innerHTML = '<p class="empty">No hay JSON formateable.</p>';
+        }
+
+        if (response.ok) {
+          setStatus("ok", `Respuesta recibida correctamente (${response.status}).`);
+        } else {
+          setStatus("error", `El backend respondio con error ${response.status}.`);
+        }
+      } catch (error) {
+        rawJson.textContent = String(error);
+        summary.innerHTML = '<p class="empty">No se pudo obtener respuesta del backend.</p>';
+        formattedJson.innerHTML = '<p class="empty">Fallo de red o CORS.</p>';
+        setStatus("error", "No se pudo conectar con el backend. Revisa la URL, CORS y que el servidor este levantado.");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Enviar y analizar";
+      }
+    });
+  </script>
+</body>
+</html>
