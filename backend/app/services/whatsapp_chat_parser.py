@@ -2,7 +2,7 @@ import pandas as pd
 import io
 import zipfile
 from typing import List, Dict, Tuple
-from app.utils.regex_patterns import detect_message_parts, detect_media_message
+from app.utils.regex_patterns import detect_message_parts, detect_media_message, detect_system_message
 
 """
 Params:
@@ -48,7 +48,6 @@ def parse_chat_to_dataframe(file_bytes: bytes, filename: str) -> pd.DataFrame:
             continue
             
         parts = detect_message_parts(line)
-        #TODO: falta añadir la opcion de que sea un mensaje del sistema
         if parts:
             # Es el inicio de un nuevo mensaje (hizo match con la Regex)
             date, time, author, message = parts
@@ -63,6 +62,9 @@ def parse_chat_to_dataframe(file_bytes: bytes, filename: str) -> pd.DataFrame:
                 "Message": message.strip()
             })
         else:
+            if detect_system_message(line):
+                continue
+            
             # No hizo match. Esto significa que es un mensaje multilínia.
             # Se lo añadimos al último mensaje registrado.
             if parsed_data:
