@@ -1,1 +1,225 @@
-// app global css
+@import '@fontsource-variable/manrope/index.css';
+
+:root {
+  --ws-canvas: #ffffff;
+  --ws-canvas-subtle: #f6f8fa;
+  --ws-canvas-inset: #f0f3f6;
+  --ws-surface: #ffffff;
+  --ws-surface-muted: #f6f8fa;
+  --ws-border: #d0d7de;
+  --ws-border-muted: #d8dee4;
+  --ws-text: #1f2328;
+  --ws-text-muted: #656d76;
+  --ws-text-subtle: #8c959f;
+  --ws-accent: #0969da;
+  --ws-success: #1f883d;
+  --ws-danger: #cf222e;
+  --ws-attention: #9a6700;
+  --ws-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
+  --ws-shadow-floating: 0 12px 28px rgba(31, 35, 40, 0.12);
+  --ws-radius: 8px;
+  --ws-radius-sm: 6px;
+}
+
+.body--dark {
+  --ws-canvas: #0d1117;
+  --ws-canvas-subtle: #010409;
+  --ws-canvas-inset: #161b22;
+  --ws-surface: #161b22;
+  --ws-surface-muted: #21262d;
+  --ws-border: #30363d;
+  --ws-border-muted: #21262d;
+  --ws-text: #e6edf3;
+  --ws-text-muted: #8b949e;
+  --ws-text-subtle: #6e7681;
+  --ws-accent: #2f81f7;
+  --ws-success: #3fb950;
+  --ws-danger: #f85149;
+  --ws-attention: #d29922;
+  --ws-shadow: 0 1px 0 rgba(240, 246, 252, 0.04);
+  --ws-shadow-floating: 0 18px 36px rgba(1, 4, 9, 0.42);
+}
+
+html,
+body,
+#q-app {
+  min-height: 100%;
+}
+
+body {
+  color: var(--ws-text);
+  background: var(--ws-canvas-subtle);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  text-rendering: geometricPrecision;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.brand-font {
+  color: var(--ws-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: var(--ws-text-muted);
+}
+
+.page-shell {
+  min-height: calc(100vh - 64px);
+  padding: 24px;
+  color: var(--ws-text);
+  background:
+    linear-gradient(var(--ws-canvas-subtle), var(--ws-canvas-subtle)) padding-box,
+    radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--ws-success) 9%, transparent), transparent 28%),
+    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--ws-accent) 8%, transparent), transparent 30%);
+}
+
+.container-xl {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+.premium-card,
+.soft-card {
+  color: var(--ws-text);
+  background: var(--ws-surface);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius);
+  box-shadow: var(--ws-shadow);
+}
+
+.soft-card {
+  background: var(--ws-surface);
+}
+
+.text-muted {
+  color: var(--ws-text-muted) !important;
+}
+
+.text-subtle {
+  color: var(--ws-text-subtle) !important;
+}
+
+.ws-chip {
+  color: var(--ws-text-muted);
+  background: var(--ws-surface-muted);
+  border: 1px solid var(--ws-border);
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.chart {
+  width: 100%;
+}
+
+.chart-scroll {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.chart-scroll__inner {
+  min-width: 760px;
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.message-preview {
+  display: -webkit-box;
+  max-width: 520px;
+  overflow: hidden;
+  white-space: normal;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.full-message {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--ws-text);
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, monospace;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.q-card,
+.q-dialog__inner > .q-card {
+  background: var(--ws-surface);
+  color: var(--ws-text);
+}
+
+.q-btn {
+  border-radius: var(--ws-radius-sm);
+  font-weight: 600;
+  text-transform: none;
+}
+
+.q-field--outlined .q-field__control::before {
+  border-color: var(--ws-border);
+}
+
+.q-field--outlined .q-field__control:hover::before,
+.q-field--outlined.q-field--focused .q-field__control::after {
+  border-color: var(--ws-accent);
+}
+
+.q-field__native,
+.q-field__label,
+.q-field__prefix,
+.q-field__suffix,
+.q-field__input,
+.q-field__marginal {
+  color: var(--ws-text);
+}
+
+.q-field__bottom,
+.q-field__messages,
+.q-item__label--caption {
+  color: var(--ws-text-muted);
+}
+
+.q-separator {
+  background: var(--ws-border-muted);
+}
+
+.q-table,
+.q-table__container,
+.q-table__middle,
+.q-table thead,
+.q-table tbody,
+.q-tab-panels,
+.q-panel {
+  background: transparent;
+  color: var(--ws-text);
+}
+
+.q-table th {
+  color: var(--ws-text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.q-table td {
+  color: var(--ws-text);
+}
+
+@media (max-width: 700px) {
+  .page-shell {
+    padding: 16px;
+  }
+
+  .chart-scroll__inner {
+    min-width: 620px;
+  }
+}
