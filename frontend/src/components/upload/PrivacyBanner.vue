@@ -30,6 +30,10 @@
   font-weight: 700;
 }
 
+.privacy-card__top .q-icon {
+  color: var(--ws-accent-strong);
+}
+
 .privacy-card p {
   margin: 12px 0 0;
   color: var(--ws-text-muted);
@@ -45,8 +49,8 @@
 
 .privacy-card__checks span {
   padding: 4px 8px;
-  color: var(--ws-text-muted);
-  background: var(--ws-surface-muted);
+  color: var(--ws-accent-chip-text);
+  background: var(--ws-accent-chip-background);
   border: 1px solid var(--ws-border);
   border-radius: 999px;
   font-size: 0.78rem;

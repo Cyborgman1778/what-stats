@@ -52,7 +52,7 @@ defineProps<{
 .streak-card {
   height: 100%;
   border-radius: var(--ws-radius);
-  background: var(--ws-surface);
+  background: var(--ws-table-inset-background);
   border: 1px solid var(--ws-border);
 }
 

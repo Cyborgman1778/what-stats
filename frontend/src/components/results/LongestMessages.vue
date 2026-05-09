@@ -128,7 +128,7 @@ function openMessage(row: Row) {
   border-color: var(--ws-border);
   border-radius: var(--ws-radius);
   overflow: hidden;
-  background: var(--ws-surface);
+  background: var(--ws-table-inset-background);
 }
 
 .message-dialog {
@@ -136,7 +136,7 @@ function openMessage(row: Row) {
   max-height: 88vh;
   border: 1px solid var(--ws-border);
   border-radius: var(--ws-radius);
-  background: var(--ws-surface);
+  background: var(--ws-surface-solid);
   color: var(--ws-text);
 }
 

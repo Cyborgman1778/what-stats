@@ -51,6 +51,6 @@ const chartHeight = computed(() => Math.max(300, props.data.length * 38));
   border-color: var(--ws-border);
   border-radius: var(--ws-radius);
   overflow: hidden;
-  background: var(--ws-surface);
+  background: var(--ws-table-inset-background);
 }
 </style>

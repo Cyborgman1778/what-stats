@@ -23,9 +23,11 @@ const $q = useQuasar();
 
 const option = computed(() => {
   const source = props.rankingMode ? [...props.data].reverse() : props.data;
-  const textColor = $q.dark.isActive ? '#e6edf3' : '#1f2328';
-  const mutedColor = $q.dark.isActive ? '#8b949e' : '#656d76';
-  const gridColor = $q.dark.isActive ? 'rgba(48,54,61,.9)' : 'rgba(208,215,222,.9)';
+  const isDark = $q.dark.isActive;
+  const textColor = isDark ? '#f8fbff' : '#102033';
+  const mutedColor = isDark ? '#9db1cc' : '#5f7189';
+  const gridColor = isDark ? 'rgba(137,171,211,.14)' : 'rgba(72,98,132,.16)';
+  const accentColor = isDark ? '#1597ff' : '#0b7cff';
 
   return {
     tooltip: {
@@ -66,8 +68,8 @@ const option = computed(() => {
         data: source.map((item) => item.value),
         barMaxWidth: 18,
         itemStyle: {
-          borderRadius: [0, 4, 4, 0],
-          color: $q.dark.isActive ? '#3fb950' : '#1f883d'
+          borderRadius: [0, 9, 9, 0],
+          color: accentColor
         }
       }
     ]

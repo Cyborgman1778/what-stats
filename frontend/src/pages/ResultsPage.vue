@@ -149,21 +149,23 @@ function confirmClear() {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .results-toolbar__kicker {
-  color: var(--ws-text-subtle);
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, monospace;
+  color: var(--ws-accent-strong);
   font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
 .results-toolbar__title {
   margin: 2px 0 0;
-  color: var(--ws-text);
+  color: var(--ws-accent-strong);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.045em;
 }
@@ -177,11 +179,13 @@ function confirmClear() {
 
 .results-card {
   overflow: hidden;
+  background: var(--ws-results-card-background);
+  border-radius: 28px;
 }
 
 .results-tabs {
   color: var(--ws-text-muted);
-  background: var(--ws-surface);
+  background: var(--ws-results-tabs-background);
 }
 
 .results-tabs :deep(.q-tab) {
@@ -193,6 +197,10 @@ function confirmClear() {
 
 .results-panels {
   background: transparent;
+}
+
+.results-panels :deep(.q-tab-panel) {
+  padding: clamp(16px, 3vw, 26px);
 }
 
 @media (max-width: 720px) {

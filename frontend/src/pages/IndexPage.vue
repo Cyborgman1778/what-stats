@@ -9,7 +9,7 @@
           </div>
 
           <h1 class="home-copy__title">Sube un chat. Mira patrones.</h1>
-          <p class="home-copy__subtitle">TXT o ZIP de WhatsApp. El backend devuelve el dashboard.</p>
+          <p class="home-copy__subtitle">TXT o ZIP de WhatsApp. WhatStats procesa el archivo y convierte el chat en un dashboard claro.</p>
 
           <div class="home-copy__meta">
             <span>sin login</span>
@@ -52,26 +52,42 @@ async function handleCompleted(stats: ChatStatsPayload) {
 <style scoped lang="scss">
 .home-page__container {
   display: grid;
-  gap: 24px;
+  min-height: calc(100vh - 154px);
+  align-content: center;
+  gap: 22px;
 }
 
 .home-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(360px, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1fr);
+  gap: 22px;
   align-items: stretch;
 }
 
 .home-copy {
   display: flex;
-  min-height: 430px;
-  padding: 28px;
+  min-height: 520px;
+  position: relative;
+  overflow: hidden;
+  padding: clamp(28px, 5vw, 48px);
   flex-direction: column;
-  justify-content: flex-end;
-  background: var(--ws-surface);
+  justify-content: center;
+  background: var(--ws-hero-background);
   border: 1px solid var(--ws-border);
-  border-radius: var(--ws-radius);
+  border-radius: 32px;
   box-shadow: var(--ws-shadow);
+  backdrop-filter: blur(22px);
+}
+
+.home-copy::after {
+  content: '';
+  position: absolute;
+  right: -90px;
+  bottom: -110px;
+  width: 260px;
+  height: 260px;
+  background: var(--ws-hero-orb);
+  pointer-events: none;
 }
 
 .repo-label {
@@ -80,8 +96,8 @@ async function handleCompleted(stats: ChatStatsPayload) {
   align-self: flex-start;
   gap: 7px;
   padding: 5px 9px;
-  color: var(--ws-text-muted);
-  background: var(--ws-surface-muted);
+  color: var(--ws-accent-strong);
+  background: var(--ws-pill-background);
   border: 1px solid var(--ws-border);
   border-radius: 999px;
   font-size: 0.78rem;
@@ -91,10 +107,13 @@ async function handleCompleted(stats: ChatStatsPayload) {
 .home-copy__title {
   max-width: 640px;
   margin: 22px 0 0;
+  color: var(--ws-accent-strong);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: clamp(2.4rem, 6vw, 5rem);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.055em;
+  text-shadow: var(--ws-title-shadow);
 }
 
 .home-copy__subtitle {
@@ -111,19 +130,24 @@ async function handleCompleted(stats: ChatStatsPayload) {
   gap: 10px;
   margin-top: 24px;
   color: var(--ws-text-subtle);
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, monospace;
   font-size: 0.78rem;
 }
 
+.home-copy__meta span {
+  padding: 6px 10px;
+  background: var(--ws-meta-background);
+  border: 1px solid var(--ws-border-muted);
+  border-radius: 999px;
+}
+
 .home-copy__meta span::before {
-  content: './';
-  color: var(--ws-success);
+  content: '';
 }
 
 .home-secondary {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: 24px;
+  gap: 22px;
 }
 
 @media (max-width: 980px) {
@@ -133,7 +157,13 @@ async function handleCompleted(stats: ChatStatsPayload) {
   }
 
   .home-copy {
-    min-height: 330px;
+    min-height: 340px;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-page__container {
+    min-height: auto;
   }
 }
 </style>

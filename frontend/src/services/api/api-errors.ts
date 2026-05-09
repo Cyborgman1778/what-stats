@@ -118,7 +118,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
       kind: 'too-large',
       status,
       detail,
-      userMessage: 'El archivo supera el tamaño máximo permitido (50 MB).'
+      userMessage: detail ?? 'El archivo supera el tamaño máximo permitido (50 MB).'
     });
   }
 
@@ -149,6 +149,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
       status,
       detail,
       userMessage:
+        detail ??
         'El backend ha devuelto un error interno. Prueba con otro archivo o revisa los logs del servidor.'
     });
   }

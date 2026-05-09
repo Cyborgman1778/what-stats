@@ -34,11 +34,13 @@ withDefaults(
 }
 
 .empty-state__icon {
-  color: var(--ws-text-subtle);
+  color: var(--ws-accent-strong);
 }
 
 .empty-state__title {
   margin: 18px 0 8px;
+  color: var(--ws-text);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: clamp(1.4rem, 2.5vw, 2rem);
   font-weight: 700;
 }

@@ -1,43 +1,120 @@
 @import '@fontsource-variable/manrope/index.css';
+@import '@fontsource/space-grotesk/400.css';
+@import '@fontsource/space-grotesk/600.css';
+@import '@fontsource/space-grotesk/700.css';
 
-:root {
-  --ws-canvas: #ffffff;
-  --ws-canvas-subtle: #f6f8fa;
-  --ws-canvas-inset: #f0f3f6;
-  --ws-surface: #ffffff;
-  --ws-surface-muted: #f6f8fa;
-  --ws-border: #d0d7de;
-  --ws-border-muted: #d8dee4;
-  --ws-text: #1f2328;
-  --ws-text-muted: #656d76;
-  --ws-text-subtle: #8c959f;
-  --ws-accent: #0969da;
-  --ws-success: #1f883d;
-  --ws-danger: #cf222e;
-  --ws-attention: #9a6700;
-  --ws-shadow: 0 1px 0 rgba(31, 35, 40, 0.04);
-  --ws-shadow-floating: 0 12px 28px rgba(31, 35, 40, 0.12);
-  --ws-radius: 8px;
-  --ws-radius-sm: 6px;
+:root,
+.body--dark {
+  --ws-canvas: #020817;
+  --ws-canvas-subtle: #030712;
+  --ws-canvas-inset: #061225;
+  --ws-surface: rgba(8, 22, 43, 0.78);
+  --ws-surface-solid: #08162b;
+  --ws-surface-muted: rgba(15, 36, 64, 0.78);
+  --ws-surface-strong: rgba(16, 44, 82, 0.92);
+  --ws-border: rgba(137, 171, 211, 0.22);
+  --ws-border-muted: rgba(137, 171, 211, 0.13);
+  --ws-text: #f8fbff;
+  --ws-text-muted: #9db1cc;
+  --ws-text-subtle: #667d9e;
+  --ws-accent: #1597ff;
+  --ws-accent-strong: #33a9ff;
+  --ws-accent-soft: rgba(21, 151, 255, 0.14);
+  --ws-success: #43b7ff;
+  --ws-danger: #ff3b55;
+  --ws-attention: #f4b84a;
+  --ws-shadow: 0 18px 58px rgba(0, 0, 0, 0.24);
+  --ws-shadow-floating: 0 28px 90px rgba(0, 0, 0, 0.46);
+  --ws-radius: 24px;
+  --ws-radius-md: 18px;
+  --ws-radius-sm: 14px;
+  --ws-body-background: radial-gradient(circle at 50% 118%, rgba(23, 119, 255, 0.3), transparent 42%), radial-gradient(circle at 14% 10%, rgba(21, 151, 255, 0.12), transparent 28%), linear-gradient(180deg, #020817 0%, #030712 58%, #07172e 100%);
+  --ws-page-background: radial-gradient(circle at 48% 108%, rgba(16, 104, 244, 0.22), transparent 38%), radial-gradient(circle at 88% 4%, rgba(51, 169, 255, 0.12), transparent 28%), linear-gradient(180deg, rgba(2, 8, 23, 0.96), rgba(3, 7, 18, 0.9) 58%, rgba(8, 25, 50, 0.96));
+  --ws-button-gradient: linear-gradient(135deg, var(--ws-accent), #2f6dff);
+  --ws-primary-button-shadow: 0 14px 34px rgba(21, 151, 255, 0.26);
+  --ws-field-background: rgba(4, 13, 29, 0.68);
+  --ws-progress-track: rgba(137, 171, 211, 0.12);
+  --ws-loading-background: rgba(3, 7, 18, 0.72);
+  --ws-backdrop-background: rgba(2, 8, 23, 0.72);
+  --ws-row-hover: rgba(21, 151, 255, 0.06);
+  --ws-header-background: rgba(2, 8, 23, 0.76);
+  --ws-header-shadow: 0 10px 38px rgba(0, 0, 0, 0.16);
+  --ws-hero-background: radial-gradient(circle at 16% 14%, rgba(21, 151, 255, 0.2), transparent 30%), linear-gradient(145deg, rgba(10, 25, 48, 0.92), rgba(5, 15, 33, 0.74));
+  --ws-hero-orb: radial-gradient(circle, rgba(21, 151, 255, 0.2), transparent 64%);
+  --ws-pill-background: rgba(21, 151, 255, 0.1);
+  --ws-meta-background: rgba(137, 171, 211, 0.08);
+  --ws-panel-glow: radial-gradient(circle at 78% 0%, rgba(21, 151, 255, 0.14), transparent 38%);
+  --ws-dropzone-background: rgba(3, 12, 28, 0.7);
+  --ws-dropzone-active-background: rgba(10, 32, 64, 0.86);
+  --ws-dropzone-icon-background: linear-gradient(145deg, rgba(14, 48, 92, 0.92), rgba(7, 26, 55, 0.92));
+  --ws-dropzone-icon-border: rgba(51, 169, 255, 0.24);
+  --ws-dropzone-icon-shadow: inset 0 0 28px rgba(21, 151, 255, 0.12), 0 18px 40px rgba(0, 0, 0, 0.22);
+  --ws-results-card-background: rgba(8, 22, 43, 0.72);
+  --ws-results-tabs-background: rgba(5, 16, 36, 0.78);
+  --ws-section-card-background: rgba(8, 22, 43, 0.72);
+  --ws-metric-card-background: radial-gradient(circle at 100% 0%, rgba(21, 151, 255, 0.14), transparent 36%), rgba(8, 22, 43, 0.72);
+  --ws-table-inset-background: rgba(4, 13, 29, 0.42);
+  --ws-summary-file-background: rgba(8, 22, 43, 0.62);
+  --ws-export-panel-background: rgba(3, 12, 28, 0.36);
+  --ws-brand-shadow: 0 12px 28px rgba(21, 151, 255, 0.28);
+  --ws-title-shadow: 0 18px 42px rgba(21, 151, 255, 0.2);
+  --ws-accent-chip-text: #b9d9ef;
+  --ws-accent-chip-background: rgba(21, 151, 255, 0.08);
 }
 
-.body--dark {
-  --ws-canvas: #0d1117;
-  --ws-canvas-subtle: #010409;
-  --ws-canvas-inset: #161b22;
-  --ws-surface: #161b22;
-  --ws-surface-muted: #21262d;
-  --ws-border: #30363d;
-  --ws-border-muted: #21262d;
-  --ws-text: #e6edf3;
-  --ws-text-muted: #8b949e;
-  --ws-text-subtle: #6e7681;
-  --ws-accent: #2f81f7;
-  --ws-success: #3fb950;
-  --ws-danger: #f85149;
-  --ws-attention: #d29922;
-  --ws-shadow: 0 1px 0 rgba(240, 246, 252, 0.04);
-  --ws-shadow-floating: 0 18px 36px rgba(1, 4, 9, 0.42);
+.body--light {
+  --ws-canvas: #fbfdff;
+  --ws-canvas-subtle: #f3f8ff;
+  --ws-canvas-inset: #eaf2fb;
+  --ws-surface: rgba(255, 255, 255, 0.88);
+  --ws-surface-solid: #ffffff;
+  --ws-surface-muted: rgba(232, 241, 252, 0.88);
+  --ws-surface-strong: rgba(255, 255, 255, 0.96);
+  --ws-border: rgba(72, 98, 132, 0.18);
+  --ws-border-muted: rgba(72, 98, 132, 0.12);
+  --ws-text: #102033;
+  --ws-text-muted: #5f7189;
+  --ws-text-subtle: #8494a8;
+  --ws-accent: #0b7cff;
+  --ws-accent-strong: #0969da;
+  --ws-accent-soft: rgba(11, 124, 255, 0.1);
+  --ws-success: #0b86d1;
+  --ws-danger: #d7263d;
+  --ws-attention: #b7791f;
+  --ws-shadow: 0 18px 58px rgba(23, 55, 96, 0.1);
+  --ws-shadow-floating: 0 28px 90px rgba(23, 55, 96, 0.18);
+  --ws-body-background: radial-gradient(circle at 50% 118%, rgba(21, 151, 255, 0.16), transparent 42%), radial-gradient(circle at 12% 8%, rgba(90, 169, 255, 0.14), transparent 30%), linear-gradient(180deg, #fbfdff 0%, #f6faff 58%, #eef6ff 100%);
+  --ws-page-background: radial-gradient(circle at 48% 108%, rgba(21, 151, 255, 0.14), transparent 38%), radial-gradient(circle at 88% 4%, rgba(51, 169, 255, 0.12), transparent 28%), linear-gradient(180deg, rgba(251, 253, 255, 0.98), rgba(246, 250, 255, 0.94) 58%, rgba(238, 246, 255, 0.98));
+  --ws-button-gradient: linear-gradient(135deg, var(--ws-accent), #2f6dff);
+  --ws-primary-button-shadow: 0 14px 34px rgba(11, 124, 255, 0.2);
+  --ws-field-background: rgba(255, 255, 255, 0.78);
+  --ws-progress-track: rgba(72, 98, 132, 0.12);
+  --ws-loading-background: rgba(248, 251, 255, 0.74);
+  --ws-backdrop-background: rgba(9, 22, 40, 0.36);
+  --ws-row-hover: rgba(11, 124, 255, 0.06);
+  --ws-header-background: rgba(255, 255, 255, 0.82);
+  --ws-header-shadow: 0 10px 38px rgba(31, 60, 101, 0.08);
+  --ws-hero-background: radial-gradient(circle at 16% 14%, rgba(21, 151, 255, 0.15), transparent 32%), linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(239, 247, 255, 0.82));
+  --ws-hero-orb: radial-gradient(circle, rgba(21, 151, 255, 0.15), transparent 64%);
+  --ws-pill-background: rgba(11, 124, 255, 0.08);
+  --ws-meta-background: rgba(47, 109, 255, 0.07);
+  --ws-panel-glow: radial-gradient(circle at 78% 0%, rgba(21, 151, 255, 0.11), transparent 38%);
+  --ws-dropzone-background: rgba(255, 255, 255, 0.72);
+  --ws-dropzone-active-background: rgba(232, 244, 255, 0.92);
+  --ws-dropzone-icon-background: linear-gradient(145deg, #eaf5ff, #dceeff);
+  --ws-dropzone-icon-border: rgba(11, 124, 255, 0.2);
+  --ws-dropzone-icon-shadow: inset 0 0 28px rgba(21, 151, 255, 0.1), 0 18px 40px rgba(23, 55, 96, 0.12);
+  --ws-results-card-background: rgba(255, 255, 255, 0.82);
+  --ws-results-tabs-background: rgba(242, 247, 254, 0.86);
+  --ws-section-card-background: rgba(255, 255, 255, 0.84);
+  --ws-metric-card-background: radial-gradient(circle at 100% 0%, rgba(21, 151, 255, 0.12), transparent 36%), rgba(255, 255, 255, 0.88);
+  --ws-table-inset-background: rgba(247, 251, 255, 0.72);
+  --ws-summary-file-background: rgba(255, 255, 255, 0.78);
+  --ws-export-panel-background: rgba(232, 244, 255, 0.45);
+  --ws-brand-shadow: 0 12px 28px rgba(11, 124, 255, 0.2);
+  --ws-title-shadow: 0 18px 42px rgba(11, 124, 255, 0.12);
+  --ws-accent-chip-text: #235d8f;
+  --ws-accent-chip-background: rgba(11, 124, 255, 0.08);
 }
 
 html,
@@ -48,8 +125,8 @@ body,
 
 body {
   color: var(--ws-text);
-  background: var(--ws-canvas-subtle);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  background: var(--ws-body-background);
+  font-family: 'ManropeVariable', Manrope, Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   text-rendering: geometricPrecision;
 }
 
@@ -61,7 +138,7 @@ h5,
 h6,
 .brand-font {
   color: var(--ws-text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -71,12 +148,11 @@ p {
 
 .page-shell {
   min-height: calc(100vh - 64px);
-  padding: 24px;
+  position: relative;
+  padding: 38px 24px;
   color: var(--ws-text);
-  background:
-    linear-gradient(var(--ws-canvas-subtle), var(--ws-canvas-subtle)) padding-box,
-    radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--ws-success) 9%, transparent), transparent 28%),
-    radial-gradient(circle at 88% 8%, color-mix(in srgb, var(--ws-accent) 8%, transparent), transparent 30%);
+  background: var(--ws-page-background);
+  isolation: isolate;
 }
 
 .container-xl {
@@ -91,10 +167,11 @@ p {
   border: 1px solid var(--ws-border);
   border-radius: var(--ws-radius);
   box-shadow: var(--ws-shadow);
+  backdrop-filter: blur(22px);
 }
 
 .soft-card {
-  background: var(--ws-surface);
+  background: color-mix(in srgb, var(--ws-surface) 78%, transparent);
 }
 
 .text-muted {
@@ -107,7 +184,7 @@ p {
 
 .ws-chip {
   color: var(--ws-text-muted);
-  background: var(--ws-surface-muted);
+  background: color-mix(in srgb, var(--ws-surface-muted) 74%, transparent);
   border: 1px solid var(--ws-border);
   border-radius: 999px;
   font-weight: 500;
@@ -157,6 +234,7 @@ p {
 .q-dialog__inner > .q-card {
   background: var(--ws-surface);
   color: var(--ws-text);
+  border-color: var(--ws-border);
 }
 
 .q-btn {
@@ -165,13 +243,47 @@ p {
   text-transform: none;
 }
 
+.q-btn.bg-primary {
+  color: #ffffff !important;
+  background: var(--ws-button-gradient) !important;
+  box-shadow: var(--ws-primary-button-shadow);
+}
+
+.q-btn.text-primary {
+  color: var(--ws-accent-strong) !important;
+}
+
+.q-btn.text-negative {
+  color: var(--ws-danger) !important;
+}
+
+.q-btn.q-btn--outline::before {
+  border-color: color-mix(in srgb, var(--ws-accent) 48%, var(--ws-border));
+}
+
+.q-focus-helper {
+  background: var(--ws-accent) !important;
+}
+
+.q-field--outlined .q-field__control,
+.q-field--standout .q-field__control,
+.q-field--filled .q-field__control {
+  min-height: 54px;
+  color: var(--ws-text);
+  background: var(--ws-field-background);
+  border-radius: var(--ws-radius-sm);
+}
+
 .q-field--outlined .q-field__control::before {
   border-color: var(--ws-border);
+  border-radius: var(--ws-radius-sm);
 }
 
 .q-field--outlined .q-field__control:hover::before,
 .q-field--outlined.q-field--focused .q-field__control::after {
   border-color: var(--ws-accent);
+  border-width: 1px;
+  border-radius: var(--ws-radius-sm);
 }
 
 .q-field__native,
@@ -193,6 +305,31 @@ p {
   background: var(--ws-border-muted);
 }
 
+.q-banner {
+  border-radius: var(--ws-radius-sm);
+}
+
+.q-linear-progress {
+  color: var(--ws-accent);
+  background: var(--ws-progress-track);
+}
+
+.q-inner-loading {
+  background: var(--ws-loading-background);
+  backdrop-filter: blur(12px);
+}
+
+.q-menu {
+  background: var(--ws-surface-solid);
+  color: var(--ws-text);
+  border: 1px solid var(--ws-border);
+  box-shadow: var(--ws-shadow-floating);
+}
+
+.q-dialog__backdrop {
+  background: var(--ws-backdrop-background);
+}
+
 .q-table,
 .q-table__container,
 .q-table__middle,
@@ -202,6 +339,14 @@ p {
 .q-panel {
   background: transparent;
   color: var(--ws-text);
+}
+
+.q-table__container {
+  border-color: var(--ws-border) !important;
+}
+
+.q-table tbody tr:hover {
+  background: var(--ws-row-hover);
 }
 
 .q-table th {
@@ -214,9 +359,29 @@ p {
   color: var(--ws-text);
 }
 
+.q-tabs,
+.q-tab-panels {
+  color: var(--ws-text-muted);
+}
+
+.q-tab--active {
+  color: var(--ws-text) !important;
+}
+
+.q-tab__indicator {
+  background: var(--ws-accent) !important;
+}
+
+.q-notification {
+  color: var(--ws-text);
+  background: var(--ws-surface-solid);
+  border: 1px solid var(--ws-border);
+  box-shadow: var(--ws-shadow-floating);
+}
+
 @media (max-width: 700px) {
   .page-shell {
-    padding: 16px;
+    padding: 22px 14px;
   }
 
   .chart-scroll__inner {

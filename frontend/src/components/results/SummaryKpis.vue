@@ -68,11 +68,16 @@ defineProps<{
 
 .summary-status {
   color: var(--ws-text);
-  background: color-mix(in srgb, var(--ws-success) 8%, var(--ws-surface));
-  border: 1px solid color-mix(in srgb, var(--ws-success) 24%, var(--ws-border));
+  background: color-mix(in srgb, var(--ws-accent) 10%, var(--ws-surface));
+  border: 1px solid color-mix(in srgb, var(--ws-accent) 28%, var(--ws-border));
+}
+
+.summary-status .q-icon {
+  color: var(--ws-accent-strong);
 }
 
 .summary-file {
   color: var(--ws-text);
+  background: var(--ws-summary-file-background);
 }
 </style>

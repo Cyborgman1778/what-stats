@@ -40,11 +40,20 @@
 
 .export-help__title {
   color: var(--ws-text);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: 1rem;
   font-weight: 700;
 }
 
 .export-help :deep(.q-item) {
   color: var(--ws-text);
+}
+
+.export-help :deep(.q-item__section--avatar) {
+  color: var(--ws-accent-strong);
+}
+
+.export-help :deep(.q-expansion-item__content) {
+  background: var(--ws-export-panel-background);
 }
 </style>

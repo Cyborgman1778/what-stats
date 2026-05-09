@@ -36,20 +36,22 @@ withDefaults(
   width: 32px;
   height: 32px;
   color: white;
-  background: var(--ws-text);
+  background: var(--ws-button-gradient);
   border-radius: 50%;
+  box-shadow: var(--ws-brand-shadow);
 }
 
 .brand-mark__glyph span {
   width: 13px;
   height: 13px;
-  border: 2px solid var(--ws-canvas);
+  border: 2px solid #d8efff;
   border-top-color: transparent;
   border-radius: 50%;
 }
 
 .brand-mark__title {
   color: var(--ws-text);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: 0.98rem;
   font-weight: 700;
   line-height: 1.05;
@@ -57,7 +59,7 @@ withDefaults(
 
 .brand-mark__subtitle {
   margin-top: 1px;
-  color: var(--ws-text-muted);
+  color: var(--ws-text-subtle);
   font-size: 0.72rem;
   line-height: 1.1;
 }

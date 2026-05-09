@@ -21,13 +21,24 @@
           @dragleave.prevent="isDragging = false"
           @drop.prevent="onDrop"
         >
+          <div class="drop-zone__visual" aria-hidden="true">
+            <div class="drop-zone__icon">
+              <q-icon name="upload_file" size="34px" />
+            </div>
+            <div>
+              <div class="drop-zone__title">Arrastra tu chat aquí</div>
+              <div class="drop-zone__text">Exportación de WhatsApp en .txt o .zip</div>
+            </div>
+          </div>
+
           <q-file
             :model-value="selectedFile"
+            class="drop-zone__input"
             outlined
             clearable
             counter
             accept=".txt,.zip"
-            label=".txt o .zip"
+            label="Seleccionar archivo"
             :disable="analysisStore.isAnalyzing"
             :error="selectedFile !== null && Boolean(fileError)"
             :error-message="fileError"
@@ -40,8 +51,6 @@
               máximo 50 MB
             </template>
           </q-file>
-
-          <div class="drop-zone__hint">arrastra o selecciona archivo</div>
         </div>
 
         <q-banner v-if="selectedFile && !fileError" rounded class="file-banner">
@@ -154,6 +163,15 @@ async function handleSubmit() {
 .upload-card {
   position: relative;
   overflow: hidden;
+  min-height: 100%;
+}
+
+.upload-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ws-panel-glow);
+  pointer-events: none;
 }
 
 .upload-card__head {
@@ -164,35 +182,76 @@ async function handleSubmit() {
 }
 
 .upload-card__eyebrow {
-  color: var(--ws-text-subtle);
-  font-family: ui-monospace, SFMono-Regular, SF Mono, Consolas, Liberation Mono, monospace;
+  color: var(--ws-accent-strong);
   font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .upload-card__title {
   margin: 4px 0 0;
+  color: var(--ws-text);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
 }
 
 .drop-zone {
-  padding: 16px;
-  background: var(--ws-canvas-subtle);
-  border: 1px dashed var(--ws-border);
-  border-radius: var(--ws-radius);
-  transition: border-color 0.16s ease, background 0.16s ease;
+  display: grid;
+  min-height: 270px;
+  align-content: center;
+  gap: 22px;
+  padding: clamp(22px, 4vw, 34px);
+  text-align: center;
+  background: var(--ws-dropzone-background);
+  border: 1px dashed color-mix(in srgb, var(--ws-accent) 36%, var(--ws-border));
+  border-radius: 28px;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
 }
 
 .drop-zone--active {
-  background: color-mix(in srgb, var(--ws-success) 7%, var(--ws-canvas-subtle));
-  border-color: var(--ws-success);
+  transform: translateY(-2px);
+  background: var(--ws-dropzone-active-background);
+  border-color: var(--ws-accent);
 }
 
-.drop-zone__hint {
-  margin-top: 8px;
+.drop-zone__visual {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+
+.drop-zone__icon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  color: var(--ws-accent-strong);
+  background: var(--ws-dropzone-icon-background);
+  border: 1px solid var(--ws-dropzone-icon-border);
+  border-radius: 50%;
+  box-shadow: var(--ws-dropzone-icon-shadow);
+}
+
+.drop-zone__title {
+  color: var(--ws-text);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.drop-zone__text {
+  margin-top: 5px;
   color: var(--ws-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.88rem;
+}
+
+.drop-zone__input {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: left;
 }
 
 .file-banner,
@@ -211,6 +270,7 @@ async function handleSubmit() {
 
 .error-banner {
   border-color: color-mix(in srgb, var(--ws-danger) 35%, var(--ws-border));
+  background: color-mix(in srgb, var(--ws-danger) 9%, var(--ws-surface-muted));
 }
 
 .warning-banner {
@@ -221,5 +281,15 @@ async function handleSubmit() {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.upload-actions .q-btn:first-child {
+  min-width: 150px;
+}
+
+@media (max-width: 560px) {
+  .upload-actions .q-btn {
+    flex: 1 1 100%;
+  }
 }
 </style>

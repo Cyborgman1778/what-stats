@@ -112,9 +112,10 @@ function cycleTheme() {
 <style scoped lang="scss">
 .main-header {
   color: var(--ws-text);
-  background: color-mix(in srgb, var(--ws-canvas) 92%, transparent);
+  background: var(--ws-header-background);
   border-bottom: 1px solid var(--ws-border);
-  backdrop-filter: blur(12px);
+  box-shadow: var(--ws-header-shadow);
+  backdrop-filter: blur(18px);
 }
 
 .main-header__bar {
@@ -141,7 +142,7 @@ function cycleTheme() {
 
 .main-header__tabs :deep(.q-tab__indicator) {
   height: 2px;
-  background: var(--ws-success);
+  background: var(--ws-accent);
 }
 
 .main-header__icon {
@@ -150,12 +151,12 @@ function cycleTheme() {
 
 .main-header__icon:hover {
   color: var(--ws-text);
-  background: var(--ws-surface-muted);
+  background: var(--ws-accent-soft);
 }
 
 .drawer-surface {
   color: var(--ws-text);
-  background: var(--ws-surface);
+  background: var(--ws-surface-solid);
 }
 
 .drawer-surface :deep(.q-item) {
@@ -166,6 +167,6 @@ function cycleTheme() {
 
 .drawer-surface :deep(.q-router-link--active) {
   color: var(--ws-text);
-  background: var(--ws-surface-muted);
+  background: var(--ws-accent-soft);
 }
 </style>

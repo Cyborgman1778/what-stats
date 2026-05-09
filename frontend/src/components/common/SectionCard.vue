@@ -29,10 +29,11 @@ defineProps<{
 <style scoped lang="scss">
 .section-card {
   overflow: hidden;
-  background: var(--ws-surface);
+  background: var(--ws-section-card-background);
   border: 1px solid var(--ws-border);
   border-radius: var(--ws-radius);
   box-shadow: var(--ws-shadow);
+  backdrop-filter: blur(18px);
 }
 
 .section-card__header {
@@ -47,6 +48,7 @@ defineProps<{
 .section-card__title {
   margin: 0;
   color: var(--ws-text);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: 1rem;
   font-weight: 700;
 }

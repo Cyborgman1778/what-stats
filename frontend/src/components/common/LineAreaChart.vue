@@ -23,9 +23,13 @@ const $q = useQuasar();
 
 const option = computed(() => {
   const manyPoints = props.data.length > 20;
-  const textColor = $q.dark.isActive ? '#e6edf3' : '#1f2328';
-  const mutedColor = $q.dark.isActive ? '#8b949e' : '#656d76';
-  const gridColor = $q.dark.isActive ? 'rgba(48,54,61,.9)' : 'rgba(208,215,222,.9)';
+  const isDark = $q.dark.isActive;
+  const textColor = isDark ? '#f8fbff' : '#102033';
+  const mutedColor = isDark ? '#9db1cc' : '#5f7189';
+  const gridColor = isDark ? 'rgba(137,171,211,.14)' : 'rgba(72,98,132,.16)';
+  const accentColor = isDark ? '#1597ff' : '#0b7cff';
+  const pointColor = isDark ? '#8fcfff' : '#1597ff';
+  const areaColor = isDark ? 'rgba(21,151,255,.14)' : 'rgba(11,124,255,.12)';
 
   return {
     tooltip: {
@@ -42,7 +46,16 @@ const option = computed(() => {
     dataZoom: manyPoints
       ? [
           { type: 'inside', throttle: 40 },
-          { type: 'slider', height: 22, bottom: 10 }
+          {
+            type: 'slider',
+            height: 22,
+            bottom: 10,
+            borderColor: isDark ? 'rgba(137,171,211,.18)' : 'rgba(72,98,132,.16)',
+            backgroundColor: isDark ? 'rgba(137,171,211,.08)' : 'rgba(72,98,132,.08)',
+            fillerColor: isDark ? 'rgba(21,151,255,.22)' : 'rgba(11,124,255,.18)',
+            handleStyle: { color: accentColor },
+            textStyle: { color: mutedColor }
+          }
         ]
       : [],
     xAxis: {
@@ -72,13 +85,13 @@ const option = computed(() => {
         symbolSize: 6,
         lineStyle: {
           width: 3,
-          color: $q.dark.isActive ? '#3fb950' : '#1f883d'
+          color: accentColor
         },
         itemStyle: {
-          color: $q.dark.isActive ? '#2f81f7' : '#0969da'
+          color: pointColor
         },
         areaStyle: {
-          color: $q.dark.isActive ? 'rgba(63,185,80,.12)' : 'rgba(31,136,61,.1)'
+          color: areaColor
         },
         data: props.data.map((item) => item.value)
       }
