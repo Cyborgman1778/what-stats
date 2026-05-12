@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import { Capacitor } from '@capacitor/core';
 import { computed } from 'vue';
 import { useQuasar } from 'quasar';
 import type { DataPoint } from 'src/utils/records';
@@ -20,10 +21,14 @@ const props = withDefaults(
 );
 
 const $q = useQuasar();
+const isNativeRuntime = Capacitor.isNativePlatform();
 
 const option = computed(() => {
   const manyPoints = props.data.length > 20;
   const hasSparsePoints = props.data.length <= 4;
+  const nativeMinValueSpan = isNativeRuntime
+    ? Math.min(60, Math.max(4, Math.ceil(props.data.length * 0.04)))
+    : undefined;
   const isDark = $q.dark.isActive;
   const textColor = isDark ? '#f8fbff' : '#102033';
   const mutedColor = isDark ? '#9db1cc' : '#5f7189';
@@ -36,33 +41,69 @@ const option = computed(() => {
     tooltip: {
       trigger: 'axis',
       confine: true,
+      ...(isNativeRuntime
+        ? {
+            triggerOn: 'mousemove|click',
+            axisPointer: {
+              type: 'line',
+              snap: true,
+              lineStyle: {
+                color: accentColor,
+                width: 2
+              },
+              label: {
+                show: true,
+                color: '#ffffff',
+                backgroundColor: accentColor
+              }
+            },
+            hideDelay: 900
+          }
+        : {}),
       valueFormatter: (value: number) => new Intl.NumberFormat('es-ES').format(value)
     },
     grid: {
       left: 10,
       right: 18,
       top: 18,
-      bottom: manyPoints ? 52 : 24,
+      bottom: manyPoints ? (isNativeRuntime ? 88 : 52) : 24,
       containLabel: true
     },
     dataZoom: manyPoints
       ? [
-          { type: 'inside', throttle: 40 },
+          {
+            type: 'inside',
+            throttle: isNativeRuntime ? 120 : 40,
+            moveOnMouseMove: !isNativeRuntime,
+            moveOnMouseWheel: false,
+            preventDefaultMouseMove: !isNativeRuntime,
+            minValueSpan: nativeMinValueSpan
+          },
           {
             type: 'slider',
-            height: 22,
-            bottom: 10,
+            height: isNativeRuntime ? 44 : 22,
+            bottom: isNativeRuntime ? 16 : 10,
+            minValueSpan: nativeMinValueSpan,
             borderColor: isDark ? 'rgba(137,171,211,.18)' : 'rgba(72,98,132,.16)',
             backgroundColor: isDark ? 'rgba(137,171,211,.08)' : 'rgba(72,98,132,.08)',
             fillerColor: isDark ? 'rgba(21,151,255,.22)' : 'rgba(11,124,255,.18)',
-            handleStyle: { color: accentColor },
+            handleSize: isNativeRuntime ? 32 : undefined,
+            moveHandleSize: isNativeRuntime ? 28 : undefined,
+            handleStyle: {
+              color: accentColor,
+              borderColor: '#ffffff',
+              borderWidth: isNativeRuntime ? 2 : 0,
+              shadowBlur: isNativeRuntime ? 10 : 0,
+              shadowColor: 'rgba(21,151,255,.32)'
+            },
             moveHandleStyle: { color: accentColor },
             selectedDataBackground: {
               lineStyle: { color: accentColor },
               areaStyle: { color: areaColor }
             },
             textStyle: { color: mutedColor },
-            showDetail: false
+            showDetail: false,
+            brushSelect: isNativeRuntime ? false : undefined
           }
         ]
       : [],

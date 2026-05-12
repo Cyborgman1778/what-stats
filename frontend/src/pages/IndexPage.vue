@@ -1,8 +1,8 @@
 <template>
-  <q-page class="page-shell home-page">
+  <q-page class="page-shell home-page" :class="{ 'home-page--native': isNativeRuntime }">
     <div class="container-xl home-page__container">
       <section class="home-grid">
-        <div class="home-copy">
+        <div v-if="!isNativeRuntime" class="home-copy">
           <div class="home-copy__content">
             <h1 class="home-copy__title">WhatStats</h1>
 
@@ -55,6 +55,7 @@
         </div>
 
         <div class="home-upload-panel">
+          <h1 v-if="isNativeRuntime" class="home-native-title">WhatStats</h1>
           <UploadCard @completed="handleCompleted" />
         </div>
       </section>
@@ -63,12 +64,14 @@
 </template>
 
 <script setup lang="ts">
+import { Capacitor } from '@capacitor/core';
 import { Notify } from 'quasar';
 import { useRouter } from 'vue-router';
 import UploadCard from 'components/upload/UploadCard.vue';
 import type { ChatStatsPayload } from 'src/services/api/types';
 
 const router = useRouter();
+const isNativeRuntime = Capacitor.isNativePlatform();
 
 async function handleCompleted(stats: ChatStatsPayload) {
   Notify.create({
@@ -93,6 +96,32 @@ async function handleCompleted(stats: ChatStatsPayload) {
   grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1fr);
   gap: 22px;
   align-items: stretch;
+}
+
+.home-page--native .home-page__container {
+  min-height: calc(100vh - 112px);
+}
+
+.home-page--native .home-grid {
+  grid-template-columns: minmax(0, 720px);
+  justify-content: center;
+}
+
+.home-page--native .home-upload-panel {
+  display: grid;
+  gap: clamp(18px, 5vw, 28px);
+}
+
+.home-native-title {
+  margin: 0;
+  color: var(--ws-accent-strong);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
+  font-size: clamp(3rem, 14vw, 5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.055em;
+  text-align: center;
+  text-shadow: var(--ws-title-shadow);
 }
 
 .home-copy {

@@ -6,7 +6,21 @@
         <h2 class="upload-card__title">Analizar chat</h2>
       </div>
 
-      <q-chip dense class="secure-chip" icon="lock" label="secured" />
+      <div class="upload-card__head-actions">
+        <q-btn
+          v-if="isNativeRuntime"
+          flat
+          round
+          dense
+          icon="help_outline"
+          aria-label="Ayuda para exportar chats"
+          @click="helpOpen = true"
+        >
+          <q-tooltip>Ayuda</q-tooltip>
+        </q-btn>
+
+        <q-chip dense class="secure-chip" icon="lock" label="secured" />
+      </div>
     </q-card-section>
 
     <q-separator />
@@ -142,9 +156,57 @@
       <div class="q-mt-sm text-weight-medium">Procesando</div>
     </q-inner-loading>
   </q-card>
+
+  <q-dialog v-model="helpOpen">
+    <q-card class="export-help-card">
+      <q-card-section class="export-help-card__head">
+        <div>
+          <div class="export-help-card__title">Cómo exportar tu chat</div>
+          <div class="text-muted">Sube un .txt o un .zip compatible, sin multimedia.</div>
+        </div>
+
+        <q-btn v-close-popup flat round dense icon="close" aria-label="Cerrar ayuda" />
+      </q-card-section>
+
+      <q-separator />
+
+      <q-list separator class="export-help-list">
+        <q-item>
+          <q-item-section avatar>
+            <q-icon name="android" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Android</q-item-label>
+            <q-item-label caption>Chat &gt; menú &gt; Más &gt; Exportar chat &gt; sin multimedia.</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item>
+          <q-item-section avatar>
+            <q-icon name="phone_iphone" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>iOS</q-item-label>
+            <q-item-label caption>Chat &gt; contacto o grupo &gt; Exportar chat &gt; sin multimedia.</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item>
+          <q-item-section avatar>
+            <q-icon name="rule" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>ZIP</q-item-label>
+            <q-item-label caption>Debe contener un .txt de chat compatible.</q-item-label>
+          </q-item-section>
+        </q-item>
+      </q-list>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
+import { Capacitor } from '@capacitor/core';
 import { ref } from 'vue';
 import { useChatUpload } from 'src/composables/useChatUpload';
 import { useAnalysisStore } from 'stores/analysis-store';
@@ -156,7 +218,9 @@ const emit = defineEmits<{
 }>();
 
 const analysisStore = useAnalysisStore();
+const isNativeRuntime = Capacitor.isNativePlatform();
 const anonymizeUsers = ref(false);
+const helpOpen = ref(false);
 
 const {
   selectedFile,
@@ -198,6 +262,21 @@ async function handleSubmit() {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+}
+
+.upload-card__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-card__head-actions .q-btn {
+  color: var(--ws-text-muted);
+}
+
+.upload-card__head-actions .q-btn:hover {
+  color: var(--ws-text);
+  background: var(--ws-accent-soft);
 }
 
 .upload-card__eyebrow {
@@ -361,6 +440,46 @@ async function handleSubmit() {
 
 .upload-actions__change {
   min-height: 42px;
+}
+
+.export-help-card {
+  width: min(460px, calc(100vw - 28px));
+  color: var(--ws-text);
+  background: var(--ws-surface);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius);
+  box-shadow: var(--ws-shadow-floating);
+}
+
+.export-help-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.export-help-card__title {
+  color: var(--ws-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.export-help-list {
+  color: var(--ws-text);
+}
+
+.export-help-list :deep(.q-item) {
+  padding: 14px 18px;
+}
+
+.export-help-list :deep(.q-item__section--avatar) {
+  min-width: 36px;
+  color: var(--ws-accent-strong);
+}
+
+.export-help-list :deep(.q-item__label--caption) {
+  color: var(--ws-text-muted);
+  line-height: 1.45;
 }
 
 @media (max-width: 560px) {
