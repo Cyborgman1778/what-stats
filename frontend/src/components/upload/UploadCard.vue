@@ -177,7 +177,9 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Android</q-item-label>
-            <q-item-label caption>Chat &gt; menú &gt; Más &gt; Exportar chat &gt; sin multimedia.</q-item-label>
+            <q-item-label caption>
+              Chat &gt; menú &gt; Más &gt; Exportar chat &gt; sin multimedia. Comparte el .zip con WhatStats.
+            </q-item-label>
           </q-item-section>
         </q-item>
 
@@ -187,7 +189,9 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>iOS</q-item-label>
-            <q-item-label caption>Chat &gt; contacto o grupo &gt; Exportar chat &gt; sin multimedia.</q-item-label>
+            <q-item-label caption>
+              Chat &gt; contacto o grupo &gt; Exportar chat &gt; sin multimedia. Abre el .zip con WhatStats.
+            </q-item-label>
           </q-item-section>
         </q-item>
 
@@ -207,9 +211,10 @@
 
 <script setup lang="ts">
 import { Capacitor } from '@capacitor/core';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useChatUpload } from 'src/composables/useChatUpload';
 import { useAnalysisStore } from 'stores/analysis-store';
+import { useNativeImportStore } from 'stores/native-import-store';
 import type { ChatStatsPayload } from 'src/services/api/types';
 import { formatBytes } from 'src/utils/format';
 
@@ -218,6 +223,7 @@ const emit = defineEmits<{
 }>();
 
 const analysisStore = useAnalysisStore();
+const nativeImportStore = useNativeImportStore();
 const isNativeRuntime = Capacitor.isNativePlatform();
 const anonymizeUsers = ref(false);
 const helpOpen = ref(false);
@@ -232,6 +238,16 @@ const {
   onDrop,
   submit
 } = useChatUpload();
+
+function applyPendingNativeFile() {
+  const file = nativeImportStore.consumePendingFile();
+
+  if (file) {
+    setFile(file);
+  }
+}
+
+watch(() => nativeImportStore.pendingFile, applyPendingNativeFile, { immediate: true });
 
 async function handleSubmit() {
   const stats = await submit({ anonymizeUsers: anonymizeUsers.value });
