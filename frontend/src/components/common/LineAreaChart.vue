@@ -23,6 +23,7 @@ const $q = useQuasar();
 
 const option = computed(() => {
   const manyPoints = props.data.length > 20;
+  const hasSparsePoints = props.data.length <= 4;
   const isDark = $q.dark.isActive;
   const textColor = isDark ? '#f8fbff' : '#102033';
   const mutedColor = isDark ? '#9db1cc' : '#5f7189';
@@ -34,6 +35,7 @@ const option = computed(() => {
   return {
     tooltip: {
       trigger: 'axis',
+      confine: true,
       valueFormatter: (value: number) => new Intl.NumberFormat('es-ES').format(value)
     },
     grid: {
@@ -54,16 +56,24 @@ const option = computed(() => {
             backgroundColor: isDark ? 'rgba(137,171,211,.08)' : 'rgba(72,98,132,.08)',
             fillerColor: isDark ? 'rgba(21,151,255,.22)' : 'rgba(11,124,255,.18)',
             handleStyle: { color: accentColor },
-            textStyle: { color: mutedColor }
+            moveHandleStyle: { color: accentColor },
+            selectedDataBackground: {
+              lineStyle: { color: accentColor },
+              areaStyle: { color: areaColor }
+            },
+            textStyle: { color: mutedColor },
+            showDetail: false
           }
         ]
       : [],
     xAxis: {
       type: 'category',
       data: props.data.map((item) => item.label),
-      boundaryGap: false,
+      boundaryGap: hasSparsePoints,
       axisLabel: {
         color: mutedColor,
+        hideOverlap: true,
+        interval: manyPoints ? 'auto' : 0,
         rotate: props.data.length > 12 ? 35 : 0
       },
       axisTick: { show: false }
@@ -82,7 +92,9 @@ const option = computed(() => {
         name: props.name,
         type: 'line',
         smooth: true,
-        symbolSize: 6,
+        sampling: manyPoints ? 'lttb' : undefined,
+        showSymbol: props.data.length <= 28,
+        symbolSize: props.data.length <= 12 ? 7 : 5,
         lineStyle: {
           width: 3,
           color: accentColor

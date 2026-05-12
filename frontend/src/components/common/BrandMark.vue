@@ -1,8 +1,6 @@
 <template>
   <div class="brand-mark">
-    <div class="brand-mark__glyph" aria-hidden="true">
-      <span />
-    </div>
+    <img class="brand-mark__logo" :src="logoUrl" alt="WhatStats" />
 
     <div>
       <div class="brand-mark__title">WhatStats</div>
@@ -12,6 +10,8 @@
 </template>
 
 <script setup lang="ts">
+import logoUrl from 'assets/logo.png';
+
 withDefaults(
   defineProps<{
     showSubtitle?: boolean;
@@ -30,23 +30,12 @@ withDefaults(
   gap: 10px;
 }
 
-.brand-mark__glyph {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  color: white;
-  background: var(--ws-button-gradient);
+.brand-mark__logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
   border-radius: 50%;
   box-shadow: var(--ws-brand-shadow);
-}
-
-.brand-mark__glyph span {
-  width: 13px;
-  height: 13px;
-  border: 2px solid #d8efff;
-  border-top-color: transparent;
-  border-radius: 50%;
 }
 
 .brand-mark__title {

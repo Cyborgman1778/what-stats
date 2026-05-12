@@ -1,0 +1,16 @@
+{
+  "appId": "com.whatstats.app",
+  "appName": "WhatStats",
+  "webDir": "www",
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -13,7 +13,7 @@
 
     <q-separator />
 
-    <q-card-section>
+    <q-card-section class="section-card__body">
       <slot />
     </q-card-section>
   </q-card>
@@ -61,5 +61,10 @@ defineProps<{
 
 .section-card__actions {
   flex: 0 0 auto;
+}
+
+.section-card__body {
+  min-width: 0;
+  overflow: hidden;
 }
 </style>

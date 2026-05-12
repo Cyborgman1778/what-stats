@@ -6,7 +6,7 @@
         <h2 class="upload-card__title">Analizar chat</h2>
       </div>
 
-      <q-chip dense class="ws-chip" icon="lock" label="local" />
+      <q-chip dense class="secure-chip" icon="lock" label="secured" />
     </q-card-section>
 
     <q-separator />
@@ -99,6 +99,7 @@
 
         <div class="upload-actions">
           <q-btn
+            class="upload-actions__analyze"
             unelevated
             color="primary"
             type="submit"
@@ -109,6 +110,7 @@
           />
 
           <q-btn
+            class="upload-actions__change"
             flat
             color="primary"
             icon="restart_alt"
@@ -117,6 +119,26 @@
             @click="clearSelection"
           />
         </div>
+
+        <q-expansion-item
+          class="advanced-options"
+          icon="tune"
+          label="Opciones avanzadas"
+          expand-icon="keyboard_arrow_down"
+        >
+          <div class="advanced-options__body">
+            <q-toggle
+              v-model="anonymizeUsers"
+              color="primary"
+              :disable="analysisStore.isAnalyzing"
+              label="Anonimización de usuarios"
+            />
+
+            <p>
+              Cambia todos los participantes por Usuario 1, Usuario 2, etc. antes de mostrar las estadísticas.
+            </p>
+          </div>
+        </q-expansion-item>
       </q-form>
     </q-card-section>
 
@@ -128,6 +150,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useChatUpload } from 'src/composables/useChatUpload';
 import { useAnalysisStore } from 'stores/analysis-store';
 import type { ChatStatsPayload } from 'src/services/api/types';
@@ -138,6 +161,7 @@ const emit = defineEmits<{
 }>();
 
 const analysisStore = useAnalysisStore();
+const anonymizeUsers = ref(false);
 
 const {
   selectedFile,
@@ -151,7 +175,7 @@ const {
 } = useChatUpload();
 
 async function handleSubmit() {
-  const stats = await submit();
+  const stats = await submit({ anonymizeUsers: anonymizeUsers.value });
 
   if (stats) {
     emit('completed', stats);
@@ -195,6 +219,21 @@ async function handleSubmit() {
   font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: 1.35rem;
   font-weight: 700;
+}
+
+.secure-chip {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--ws-accent), #00c2ff 48%, #2f6dff);
+  border: 1px solid color-mix(in srgb, #ffffff 28%, var(--ws-accent));
+  border-radius: 999px;
+  box-shadow: 0 12px 30px rgba(21, 151, 255, 0.28);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.secure-chip :deep(.q-icon) {
+  color: #dff5ff;
 }
 
 .drop-zone {
@@ -277,14 +316,56 @@ async function handleSubmit() {
   border-color: color-mix(in srgb, var(--ws-attention) 35%, var(--ws-border));
 }
 
+.advanced-options {
+  overflow: hidden;
+  color: var(--ws-text);
+  background: color-mix(in srgb, var(--ws-surface-muted) 48%, transparent);
+  border: 1px solid var(--ws-border-muted);
+  border-radius: 20px;
+}
+
+.advanced-options :deep(.q-item) {
+  min-height: 48px;
+  color: var(--ws-text);
+  padding: 10px 14px;
+}
+
+.advanced-options :deep(.q-item__section--avatar) {
+  min-width: 34px;
+  color: var(--ws-accent-strong);
+}
+
+.advanced-options__body {
+  display: grid;
+  gap: 6px;
+  padding: 0 14px 14px;
+}
+
+.advanced-options__body p {
+  margin: 0;
+  color: var(--ws-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 .upload-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.upload-actions .q-btn:first-child {
-  min-width: 150px;
+.upload-actions__analyze {
+  min-width: 190px;
+  min-height: 48px;
+  padding-right: 22px;
+  padding-left: 22px;
+  font-size: 1rem;
+}
+
+.upload-actions__change {
+  min-height: 42px;
 }
 
 @media (max-width: 560px) {

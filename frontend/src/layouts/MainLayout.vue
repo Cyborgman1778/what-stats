@@ -119,8 +119,10 @@ function cycleTheme() {
 }
 
 .main-header__bar {
+  height: 64px;
   min-height: 64px;
   gap: 14px;
+  overflow: hidden;
 }
 
 .main-header__tabs {

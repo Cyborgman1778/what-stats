@@ -5,6 +5,10 @@ import { validateChatFile } from 'src/utils/files';
 import type { ChatStatsPayload } from 'src/services/api/types';
 import type { NormalizedApiError } from 'src/services/api/api-errors';
 
+interface SubmitOptions {
+  anonymizeUsers?: boolean;
+}
+
 export function useChatUpload() {
   const analysisStore = useAnalysisStore();
 
@@ -35,7 +39,7 @@ export function useChatUpload() {
     setFile(file);
   }
 
-  async function submit(): Promise<ChatStatsPayload | null> {
+  async function submit(options: SubmitOptions = {}): Promise<ChatStatsPayload | null> {
     const currentValidation = validateChatFile(selectedFile.value);
 
     if (!currentValidation.valid || !selectedFile.value) {
@@ -48,7 +52,7 @@ export function useChatUpload() {
     }
 
     try {
-      return await analysisStore.analyzeFile(selectedFile.value);
+      return await analysisStore.analyzeFile(selectedFile.value, options);
     } catch (error) {
       const normalizedError = error as NormalizedApiError;
 

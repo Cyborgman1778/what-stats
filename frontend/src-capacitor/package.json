@@ -1,7 +1,7 @@
 {
-  "name": "whatstats-capacitor",
+  "name": "whatstats-frontend",
   "version": "1.0.0",
-  "description": "Capacitor wrapper for WhatStats.",
+  "description": "Frontend multiplataforma de WhatStats con Quasar, Vue 3 y Capacitor.",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -9,7 +9,7 @@
     "@capacitor/core": "^6.1.2"
   },
   "devDependencies": {
-    "@capacitor/android": "^6.1.2",
+    "@capacitor/android": "^6.2.1",
     "@capacitor/cli": "^6.1.2",
     "@capacitor/ios": "^6.1.2"
   }

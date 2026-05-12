@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WhatStats</string>
+    <string name="title_activity_main">WhatStats</string>
+    <string name="package_name">com.whatstats.app</string>
+    <string name="custom_url_scheme">com.whatstats.app</string>
+</resources>

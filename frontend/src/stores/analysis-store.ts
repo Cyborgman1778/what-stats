@@ -12,6 +12,51 @@ interface CurrentFileMeta {
   analyzedAt: string;
 }
 
+interface AnalyzeFileOptions {
+  anonymizeUsers?: boolean;
+}
+
+function anonymizeChatStats(stats: ChatStatsPayload): ChatStatsPayload {
+  const aliases = new Map<string, string>();
+
+  function getAlias(name: string) {
+    const normalizedName = name.trim();
+    if (!normalizedName) return name;
+
+    const existingAlias = aliases.get(normalizedName);
+    if (existingAlias) return existingAlias;
+
+    const alias = `Usuario ${aliases.size + 1}`;
+    aliases.set(normalizedName, alias);
+
+    return alias;
+  }
+
+  stats.participants.forEach((participant) => getAlias(participant));
+  Object.keys(stats.n_messages_per_user).forEach((participant) => getAlias(participant));
+  stats.longest_messages.forEach((message) => getAlias(message.Author));
+
+  const messagesPerAnonymousUser = Object.entries(stats.n_messages_per_user).reduce<Record<string, number>>(
+    (accumulator, [participant, count]) => {
+      const alias = getAlias(participant);
+      accumulator[alias] = (accumulator[alias] ?? 0) + count;
+
+      return accumulator;
+    },
+    {}
+  );
+
+  return {
+    ...stats,
+    participants: stats.participants.map((participant) => getAlias(participant)),
+    n_messages_per_user: messagesPerAnonymousUser,
+    longest_messages: stats.longest_messages.map((message) => ({
+      ...message,
+      Author: getAlias(message.Author)
+    }))
+  };
+}
+
 export const useAnalysisStore = defineStore('analysis', () => {
   const stats = ref<ChatStatsPayload | null>(null);
   const currentFile = ref<CurrentFileMeta | null>(null);
@@ -38,7 +83,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     error.value = null;
   }
 
-  async function analyzeFile(file: File) {
+  async function analyzeFile(file: File, options: AnalyzeFileOptions = {}) {
     if (isAnalyzing.value) return null;
 
     error.value = null;
@@ -52,7 +97,9 @@ export const useAnalysisStore = defineStore('analysis', () => {
         uploadProgress.value = Math.min(100, Math.round((event.loaded * 100) / event.total));
       });
 
-      stats.value = response.stats;
+      const nextStats = options.anonymizeUsers ? anonymizeChatStats(response.stats) : response.stats;
+
+      stats.value = nextStats;
       currentFile.value = {
         name: file.name,
         size: file.size,
@@ -60,7 +107,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
         analyzedAt: new Date().toISOString()
       };
 
-      return response.stats;
+      return nextStats;
     } catch (unknownError) {
       const normalizedError = unknownError as NormalizedApiError;
       error.value = normalizedError;

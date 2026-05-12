@@ -1,5 +1,5 @@
 <template>
-  <div class="q-gutter-xl">
+  <div class="temporal-activity">
     <SectionCard title="Horas" subtitle="actividad diaria">
       <LineAreaChart
         v-if="hotHours.length > 0"
@@ -14,16 +14,17 @@
       title="Días"
       subtitle="serie diaria"
     >
-      <div v-if="messagesPerDay.length > 0" class="chart-scroll">
-        <div class="chart-scroll__inner" :style="{ minWidth: dailyMinWidth }">
-          <LineAreaChart :data="messagesPerDay" name="Mensajes por día" :height="340" />
-        </div>
-      </div>
+      <LineAreaChart
+        v-if="messagesPerDay.length > 0"
+        :data="messagesPerDay"
+        name="Mensajes por día"
+        :height="340"
+      />
       <p v-else class="text-muted">Sin días.</p>
     </SectionCard>
 
-    <div class="row q-col-gutter-xl">
-      <div class="col-12 col-lg-6">
+    <div class="temporal-activity__grid">
+      <div class="temporal-activity__item">
         <SectionCard title="Meses" subtitle="serie mensual">
           <LineAreaChart
             v-if="messagesPerMonth.length > 0"
@@ -35,7 +36,7 @@
         </SectionCard>
       </div>
 
-      <div class="col-12 col-lg-6">
+      <div class="temporal-activity__item">
         <SectionCard title="Años" subtitle="serie anual">
           <LineAreaChart
             v-if="messagesPerYear.length > 0"
@@ -60,19 +61,56 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import SectionCard from 'components/common/SectionCard.vue';
 import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
 import LineAreaChart from 'components/common/LineAreaChart.vue';
 import type { DataPoint } from 'src/utils/records';
 
-const props = defineProps<{
+defineProps<{
   hotHours: DataPoint[];
   messagesPerDay: DataPoint[];
   messagesPerMonth: DataPoint[];
   messagesPerYear: DataPoint[];
   topMessagesPerDay: DataPoint[];
 }>();
-
-const dailyMinWidth = computed(() => `${Math.max(760, props.messagesPerDay.length * 34)}px`);
 </script>
+
+<style scoped lang="scss">
+.temporal-activity,
+.temporal-activity__grid,
+.temporal-activity__item {
+  min-width: 0;
+}
+
+.temporal-activity {
+  display: grid;
+  gap: clamp(24px, 3vw, 36px);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.temporal-activity__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 1.8vw, 22px);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.temporal-activity__item {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.temporal-activity__item :deep(.section-card) {
+  height: 100%;
+}
+
+@media (max-width: 1024px) {
+  .temporal-activity__grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
