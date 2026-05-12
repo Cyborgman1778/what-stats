@@ -68,11 +68,6 @@
 
           <div>
             <div class="text-weight-bold">{{ analysisStore.error.userMessage }}</div>
-            <ul v-if="analysisStore.error.troubleshooting?.length" class="q-mb-none q-pl-md">
-              <li v-for="tip in analysisStore.error.troubleshooting" :key="tip">
-                {{ tip }}
-              </li>
-            </ul>
           </div>
         </q-banner>
 

@@ -89,14 +89,8 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
     return createNormalizedApiError({
       kind: 'network',
       userMessage:
-        'No se pudo contactar con el backend. Puede estar apagado, la URL puede ser incorrecta o puede haber un problema de CORS.',
-      technicalMessage: error.message,
-      troubleshooting: [
-        'Comprueba que el backend está arrancado.',
-        'Revisa la API base URL en Ajustes.',
-        'En móvil real no uses localhost; usa una IP LAN o una URL remota.',
-        'En web, comprueba que el backend permite el origen del frontend en CORS.'
-      ]
+        'No se pudo conectar con el servicio. Comprueba tu conexión e inténtalo de nuevo.',
+      technicalMessage: error.message
     });
   }
 
@@ -109,7 +103,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
       kind: 'bad-request',
       status,
       detail,
-      userMessage: detail ?? 'El archivo no es válido para el backend.'
+      userMessage: detail ?? 'El archivo no es válido o no se ha podido procesar.'
     });
   }
 
@@ -150,7 +144,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
       detail,
       userMessage:
         detail ??
-        'El backend ha devuelto un error interno. Prueba con otro archivo o revisa los logs del servidor.'
+        'El servicio no ha podido completar el análisis. Prueba con otro archivo o inténtalo más tarde.'
     });
   }
 
@@ -158,7 +152,7 @@ export function normalizeApiError(error: unknown): NormalizedApiError {
     kind: 'unknown',
     status,
     detail,
-    userMessage: detail ?? 'La API ha devuelto una respuesta no esperada.',
+    userMessage: detail ?? 'El servicio ha devuelto una respuesta no esperada.',
     technicalMessage: error.message
   });
 }

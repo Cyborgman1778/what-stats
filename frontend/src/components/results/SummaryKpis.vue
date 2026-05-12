@@ -21,7 +21,7 @@
       </div>
 
       <div class="col-12 col-sm-6 col-lg-3">
-        <MetricCard icon="verified" eyebrow="Estado" value="OK" label="backend" />
+        <MetricCard icon="verified" eyebrow="Estado" value="OK" label="procesado" />
       </div>
     </div>
 

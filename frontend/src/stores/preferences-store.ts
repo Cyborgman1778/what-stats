@@ -12,7 +12,7 @@ import { setApiBaseUrl } from 'src/services/api/client';
 export type ThemePreference = 'light' | 'dark' | 'auto';
 
 export const usePreferencesStore = defineStore('preferences', () => {
-  const theme = ref<ThemePreference>('dark');
+  const theme = ref<ThemePreference>('auto');
   const apiBaseUrl = ref(getDefaultApiBaseUrl());
   const hasHydrated = ref(false);
 
