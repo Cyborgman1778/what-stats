@@ -36,14 +36,7 @@
       />
 
       <template v-else>
-        <SummaryKpis
-          :stats="stats"
-          :file-name="analysisStore.currentFile?.name"
-          :file-size="analysisStore.currentFile?.size"
-          :analyzed-at="analysisStore.currentFile?.analyzedAt"
-        />
-
-        <q-card flat class="premium-card results-card q-mt-lg">
+        <q-card flat class="premium-card results-card">
           <q-tabs
             v-model="tab"
             dense
@@ -63,6 +56,13 @@
           <q-tab-panels v-model="tab" animated class="results-panels">
             <q-tab-panel name="overview">
               <div class="q-gutter-lg">
+                <SummaryKpis
+                  :stats="stats"
+                  :file-name="analysisStore.currentFile?.name"
+                  :file-size="analysisStore.currentFile?.size"
+                  :analyzed-at="analysisStore.currentFile?.analyzedAt"
+                />
+
                 <ParticipantsPanel :participants="stats.participants" />
                 <MessagesByUser :data="normalized.messagesByUser.value" />
               </div>

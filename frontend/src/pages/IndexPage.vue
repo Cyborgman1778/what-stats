@@ -76,7 +76,9 @@ const isNativeRuntime = Capacitor.isNativePlatform();
 async function handleCompleted(stats: ChatStatsPayload) {
   Notify.create({
     type: stats.status === 'failed' ? 'info' : 'positive',
-    message: stats.status === 'failed' ? 'Sin mensajes válidos.' : 'Análisis listo.'
+    message: stats.status === 'failed' ? 'Sin mensajes válidos.' : stats.message,
+    position: 'bottom',
+    timeout: 3000
   });
 
   await router.push('/results');

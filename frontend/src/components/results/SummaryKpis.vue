@@ -1,63 +1,64 @@
 <template>
   <div class="summary-stack">
-    <q-banner rounded class="summary-status">
-      <template #avatar>
-        <q-icon name="task_alt" />
-      </template>
-      {{ stats.message }}
-    </q-banner>
+    <div class="summary-grid">
+      <q-card flat class="summary-chat-card">
+        <q-card-section>
+          <div class="summary-chat-card__head">
+            <span>Chat</span>
+            <q-icon name="chat" size="18px" />
+          </div>
 
-    <div class="row q-col-gutter-md">
-      <div class="col-12 col-sm-6 col-lg-3">
+          <div class="summary-chat-card__value">{{ chatTitle }}</div>
+          <div class="summary-chat-card__label">conversación</div>
+        </q-card-section>
+      </q-card>
+
+      <div>
         <MetricCard icon="forum" eyebrow="Mensajes" :value="formatNumber(stats.total_messages)" label="total" />
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3">
+      <div>
         <MetricCard icon="group" eyebrow="Usuarios" :value="formatNumber(stats.total_users)" label="detectados" />
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3">
-        <MetricCard icon="badge" eyebrow="Participantes" :value="formatNumber(stats.participants.length)" label="nombres" />
+      <div>
+        <MetricCard icon="database" eyebrow="Tamaño" :value="chatSize" label="del chat" />
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3">
-        <MetricCard icon="verified" eyebrow="Estado" value="OK" label="procesado" />
+      <div>
+        <MetricCard icon="event" eyebrow="Fecha" :value="analysisDate" label="análisis" />
       </div>
     </div>
-
-    <q-card v-if="fileName || analyzedAt" flat class="soft-card summary-file">
-      <q-card-section class="row q-col-gutter-md">
-        <div v-if="fileName" class="col-12 col-md-4">
-          <div class="text-muted">Archivo</div>
-          <div class="text-weight-bold ellipsis">{{ fileName }}</div>
-        </div>
-
-        <div v-if="fileSize" class="col-12 col-md-4">
-          <div class="text-muted">Tamaño</div>
-          <div class="text-weight-bold">{{ formatBytes(fileSize) }}</div>
-        </div>
-
-        <div v-if="analyzedAt" class="col-12 col-md-4">
-          <div class="text-muted">Fecha</div>
-          <div class="text-weight-bold">{{ formatDateTime(analyzedAt) }}</div>
-        </div>
-      </q-card-section>
-    </q-card>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import MetricCard from 'components/common/MetricCard.vue';
 import type { ChatStatsPayload } from 'src/services/api/types';
 import { formatBytes, formatNumber } from 'src/utils/format';
 import { formatDateTime } from 'src/utils/dates';
 
-defineProps<{
+const props = defineProps<{
   stats: ChatStatsPayload;
   fileName?: string | undefined;
   fileSize?: number | undefined;
   analyzedAt?: string | undefined;
 }>();
+
+const chatTitle = computed(() => formatChatTitle(props.fileName));
+const chatSize = computed(() => (typeof props.fileSize === 'number' ? formatBytes(props.fileSize) : '—'));
+const analysisDate = computed(() => (props.analyzedAt ? formatDateTime(props.analyzedAt) : '—'));
+
+function formatChatTitle(fileName?: string) {
+  if (!fileName) return 'Chat';
+
+  const baseName = fileName.replace(/\.(txt|zip)$/i, '').trim();
+  const match = baseName.match(/\bcon\s+(.+)$/i);
+  const chatName = (match?.[1] ?? baseName).trim();
+
+  return chatName ? `Chat con ${chatName}` : 'Chat';
+}
 </script>
 
 <style scoped lang="scss">
@@ -66,18 +67,49 @@ defineProps<{
   gap: 16px;
 }
 
-.summary-status {
-  color: var(--ws-text);
-  background: color-mix(in srgb, var(--ws-accent) 10%, var(--ws-surface));
-  border: 1px solid color-mix(in srgb, var(--ws-accent) 28%, var(--ws-border));
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
 }
 
-.summary-status .q-icon {
+.summary-chat-card {
+  height: 100%;
+  overflow: hidden;
+  color: var(--ws-text);
+  background: var(--ws-metric-card-background);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius);
+  box-shadow: var(--ws-shadow);
+}
+
+.summary-chat-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ws-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.summary-chat-card__head .q-icon {
   color: var(--ws-accent-strong);
 }
 
-.summary-file {
-  color: var(--ws-text);
-  background: var(--ws-summary-file-background);
+.summary-chat-card__value {
+  margin-top: 18px;
+  overflow-wrap: anywhere;
+  color: var(--ws-accent-strong);
+  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.summary-chat-card__label {
+  margin-top: 7px;
+  color: var(--ws-text-muted);
+  font-size: 0.84rem;
 }
 </style>
