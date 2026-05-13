@@ -1,32 +1,20 @@
 <template>
   <div class="summary-stack">
     <div class="summary-grid">
-      <q-card flat class="summary-chat-card">
-        <q-card-section>
-          <div class="summary-chat-card__head">
-            <span>Chat</span>
-            <q-icon name="chat" size="18px" />
-          </div>
-
-          <div class="summary-chat-card__value">{{ chatTitle }}</div>
-          <div class="summary-chat-card__label">conversación</div>
-        </q-card-section>
-      </q-card>
-
-      <div>
-        <MetricCard icon="forum" eyebrow="Mensajes" :value="formatNumber(stats.total_messages)" label="total" />
+      <div class="summary-grid__item">
+        <MetricCard icon="forum" eyebrow="Mensajes Totales" :value="formatNumber(stats.total_messages)" />
       </div>
 
-      <div>
-        <MetricCard icon="group" eyebrow="Usuarios" :value="formatNumber(stats.total_users)" label="detectados" />
+      <div class="summary-grid__item">
+        <MetricCard icon="group" eyebrow="Usuarios" :value="formatNumber(stats.total_users)" />
       </div>
 
-      <div>
-        <MetricCard icon="database" eyebrow="Tamaño" :value="chatSize" label="del chat" />
+      <div class="summary-grid__item">
+        <MetricCard icon="database" eyebrow="Tamaño" :value="chatSize" />
       </div>
 
-      <div>
-        <MetricCard icon="event" eyebrow="Fecha" :value="analysisDate" label="análisis" />
+      <div class="summary-grid__item summary-grid__item--wide">
+        <MetricCard icon="event" eyebrow="Inicio del chat" :value="chatStartDate" />
       </div>
     </div>
   </div>
@@ -37,27 +25,39 @@ import { computed } from 'vue';
 import MetricCard from 'components/common/MetricCard.vue';
 import type { ChatStatsPayload } from 'src/services/api/types';
 import { formatBytes, formatNumber } from 'src/utils/format';
-import { formatDateTime } from 'src/utils/dates';
+import { compareOptionalDates, parseDDMMYYYY } from 'src/utils/dates';
 
 const props = defineProps<{
   stats: ChatStatsPayload;
-  fileName?: string | undefined;
   fileSize?: number | undefined;
-  analyzedAt?: string | undefined;
 }>();
 
-const chatTitle = computed(() => formatChatTitle(props.fileName));
 const chatSize = computed(() => (typeof props.fileSize === 'number' ? formatBytes(props.fileSize) : '—'));
-const analysisDate = computed(() => (props.analyzedAt ? formatDateTime(props.analyzedAt) : '—'));
+const chatStartDate = computed(() => formatFirstChatDate(props.stats.messages_per_day));
 
-function formatChatTitle(fileName?: string) {
-  if (!fileName) return 'Chat';
+function formatFirstChatDate(messagesPerDay: Record<string, number>) {
+  const firstDay = Object.keys(messagesPerDay)
+    .filter((day) => Number.isFinite(messagesPerDay[day]))
+    .sort((a, b) => {
+      const compared = compareOptionalDates(parseDDMMYYYY(a), parseDDMMYYYY(b));
+      return compared === 0 ? a.localeCompare(b, 'es') : compared;
+    })[0];
 
-  const baseName = fileName.replace(/\.(txt|zip)$/i, '').trim();
-  const match = baseName.match(/\bcon\s+(.+)$/i);
-  const chatName = (match?.[1] ?? baseName).trim();
+  if (!firstDay) return '—';
 
-  return chatName ? `Chat con ${chatName}` : 'Chat';
+  const parsedDate = parseDDMMYYYY(firstDay);
+
+  if (!parsedDate) return firstDay;
+
+  return formatCompactDate(parsedDate);
+}
+
+function formatCompactDate(date: Date) {
+  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const day = date.getDate();
+  const month = months[date.getMonth()] ?? '';
+
+  return `${day} ${month} ${date.getFullYear()}`;
 }
 </script>
 
@@ -69,47 +69,23 @@ function formatChatTitle(fileName?: string) {
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  grid-auto-rows: 1fr;
   gap: 16px;
+  align-items: stretch;
 }
 
-.summary-chat-card {
+.summary-grid__item {
   height: 100%;
-  overflow: hidden;
-  color: var(--ws-text);
-  background: var(--ws-metric-card-background);
-  border: 1px solid var(--ws-border);
-  border-radius: var(--ws-radius);
-  box-shadow: var(--ws-shadow);
 }
 
-.summary-chat-card__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--ws-text-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
+.summary-grid__item--wide {
+  grid-column: span 2;
 }
 
-.summary-chat-card__head .q-icon {
-  color: var(--ws-accent-strong);
-}
-
-.summary-chat-card__value {
-  margin-top: 18px;
-  overflow-wrap: anywhere;
-  color: var(--ws-accent-strong);
-  font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
-  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
-}
-
-.summary-chat-card__label {
-  margin-top: 7px;
-  color: var(--ws-text-muted);
-  font-size: 0.84rem;
+@media (max-width: 420px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>

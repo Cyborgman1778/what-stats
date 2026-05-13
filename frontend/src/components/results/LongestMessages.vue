@@ -1,8 +1,5 @@
 <template>
-  <SectionCard
-    title="Mensajes largos"
-    subtitle="vista previa"
-  >
+  <SectionCard title="Mensajes largos">
     <q-table
       v-if="rows.length > 0"
       flat
@@ -10,12 +7,15 @@
       :rows="rows"
       :columns="columns"
       row-key="id"
-      :pagination="{ rowsPerPage: 8 }"
+      :pagination="{ rowsPerPage: 5 }"
+      :rows-per-page-options="[5, 10, 20]"
+      rows-per-page-label="Filas por página"
+      :pagination-label="getPaginationLabel"
       class="longest-table"
     >
       <template #body-cell-preview="scope">
         <q-td :props="scope">
-          <span class="message-preview">{{ scope.row.Message }}</span>
+          <span class="message-preview">{{ scope.row.preview }}</span>
         </q-td>
       </template>
 
@@ -88,38 +88,53 @@ const rows = computed<Row[]>(() =>
   }))
 );
 
+const authorColumnStyle = 'width: 1%; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;';
+const lengthColumnStyle = 'width: 1%; max-width: 90px; white-space: nowrap; padding-left: 8px; padding-right: 10px;';
+const actionColumnStyle = 'width: 1%; white-space: nowrap; padding-left: 8px; padding-right: 10px;';
+
 const columns: QTableColumn<Row>[] = [
   {
     name: 'Author',
     label: 'Autor',
     field: 'Author',
     align: 'left',
-    sortable: true
+    sortable: true,
+    style: authorColumnStyle,
+    headerStyle: authorColumnStyle
   },
   {
     name: 'Length',
     label: 'Longitud',
     field: 'Length',
-    align: 'right',
-    sortable: true
+    align: 'left',
+    sortable: true,
+    style: lengthColumnStyle,
+    headerStyle: lengthColumnStyle
+  },
+  {
+    name: 'actions',
+    label: 'Ver',
+    field: 'id',
+    align: 'center',
+    style: actionColumnStyle,
+    headerStyle: actionColumnStyle
   },
   {
     name: 'preview',
     label: 'Vista previa',
     field: 'preview',
-    align: 'left'
-  },
-  {
-    name: 'actions',
-    label: '',
-    field: 'id',
-    align: 'center'
+    align: 'left',
+    style: 'width: 100%;'
   }
 ];
 
 function openMessage(row: Row) {
   selectedMessage.value = row;
   dialogOpen.value = true;
+}
+
+function getPaginationLabel(firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) {
+  return `${firstRowIndex}-${endRowIndex} de ${totalRowsNumber}`;
 }
 </script>
 

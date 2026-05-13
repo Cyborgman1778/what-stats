@@ -38,11 +38,11 @@ defineProps<{
 
 .section-card__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding-top: 14px;
-  padding-bottom: 14px;
+  padding-top: 11px;
+  padding-bottom: 11px;
 }
 
 .section-card__title {
@@ -51,6 +51,7 @@ defineProps<{
   font-family: 'Space Grotesk', 'ManropeVariable', Manrope, sans-serif;
   font-size: 1rem;
   font-weight: 700;
+  line-height: 1.15;
 }
 
 .section-card__subtitle {

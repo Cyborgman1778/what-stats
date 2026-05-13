@@ -1,5 +1,5 @@
 <template>
-  <SectionCard title="Rachas" subtitle="días consecutivos">
+  <SectionCard title="Rachas">
     <div v-if="streaks.length > 0" class="row q-col-gutter-md">
       <div v-for="(streak, index) in streaks" :key="`${streak.start}-${streak.end}-${index}`" class="col-12 col-md-4">
         <q-card flat class="streak-card">

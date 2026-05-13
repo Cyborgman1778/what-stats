@@ -1,6 +1,6 @@
 <template>
   <div class="temporal-activity">
-    <SectionCard title="Horas" subtitle="actividad diaria">
+    <SectionCard title="Horas">
       <LineAreaChart
         v-if="hotHours.length > 0"
         :data="hotHours"
@@ -10,10 +10,7 @@
       <p v-else class="text-muted">Sin horas.</p>
     </SectionCard>
 
-    <SectionCard
-      title="Días"
-      subtitle="serie diaria"
-    >
+    <SectionCard title="Días">
       <LineAreaChart
         v-if="messagesPerDay.length > 0"
         :data="messagesPerDay"
@@ -25,7 +22,7 @@
 
     <div class="temporal-activity__grid">
       <div class="temporal-activity__item">
-        <SectionCard title="Meses" subtitle="serie mensual">
+        <SectionCard title="Meses">
           <LineAreaChart
             v-if="messagesPerMonth.length > 0"
             :data="messagesPerMonth"
@@ -37,7 +34,7 @@
       </div>
 
       <div class="temporal-activity__item">
-        <SectionCard title="Años" subtitle="serie anual">
+        <SectionCard title="Años">
           <LineAreaChart
             v-if="messagesPerYear.length > 0"
             :data="messagesPerYear"
@@ -49,12 +46,19 @@
       </div>
     </div>
 
-    <SectionCard title="Top días" subtitle="ranking">
-      <HorizontalBarChart
-        v-if="topMessagesPerDay.length > 0"
-        :data="topMessagesPerDay"
-        :height="Math.max(300, topMessagesPerDay.length * 36)"
-      />
+    <SectionCard title="Top días">
+      <div v-if="topMessagesPerDay.length > 0" class="row q-col-gutter-lg">
+        <div class="col-12 col-lg-8">
+          <HorizontalBarChart
+            :data="topMessagesPerDay"
+            :height="Math.max(300, topMessagesPerDay.length * 36)"
+          />
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <RankingList :data="topMessagesPerDay" unit="mensajes" />
+        </div>
+      </div>
       <p v-else class="text-muted">Sin ranking.</p>
     </SectionCard>
   </div>
@@ -64,6 +68,7 @@
 import SectionCard from 'components/common/SectionCard.vue';
 import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
 import LineAreaChart from 'components/common/LineAreaChart.vue';
+import RankingList from 'components/results/RankingList.vue';
 import type { DataPoint } from 'src/utils/records';
 
 defineProps<{

@@ -7,7 +7,7 @@
       </div>
 
       <div class="metric-card__value">{{ value }}</div>
-      <div class="metric-card__label">{{ label }}</div>
+      <div v-if="label" class="metric-card__label">{{ label }}</div>
     </q-card-section>
   </q-card>
 </template>
@@ -17,7 +17,7 @@ defineProps<{
   icon: string;
   eyebrow: string;
   value: string | number;
-  label: string;
+  label?: string;
 }>();
 </script>
 

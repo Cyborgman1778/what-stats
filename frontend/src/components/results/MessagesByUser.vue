@@ -1,8 +1,5 @@
 <template>
-  <SectionCard
-    title="Mensajes por usuario"
-    subtitle="ranking"
-  >
+  <SectionCard title="Mensajes por usuario">
     <div v-if="data.length === 0" class="text-muted">
       Sin datos.
     </div>
@@ -13,20 +10,7 @@
       </div>
 
       <div class="col-12 col-lg-4">
-        <q-list bordered separator class="ranking-list">
-          <q-item v-for="(item, index) in data" :key="item.label">
-            <q-item-section avatar>
-              <q-avatar color="primary" text-color="white" size="28px">
-                {{ index + 1 }}
-              </q-avatar>
-            </q-item-section>
-
-            <q-item-section>
-              <q-item-label class="ellipsis">{{ item.label }}</q-item-label>
-              <q-item-label caption>{{ formatNumber(item.value) }} mensajes</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <RankingList :data="data" unit="mensajes" />
       </div>
     </div>
   </SectionCard>
@@ -36,8 +20,8 @@
 import { computed } from 'vue';
 import SectionCard from 'components/common/SectionCard.vue';
 import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
+import RankingList from 'components/results/RankingList.vue';
 import type { DataPoint } from 'src/utils/records';
-import { formatNumber } from 'src/utils/format';
 
 const props = defineProps<{
   data: DataPoint[];
@@ -45,12 +29,3 @@ const props = defineProps<{
 
 const chartHeight = computed(() => Math.max(300, props.data.length * 38));
 </script>
-
-<style scoped lang="scss">
-.ranking-list {
-  border-color: var(--ws-border);
-  border-radius: var(--ws-radius);
-  overflow: hidden;
-  background: var(--ws-table-inset-background);
-}
-</style>

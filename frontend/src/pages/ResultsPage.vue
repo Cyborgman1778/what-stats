@@ -1,9 +1,9 @@
 <template>
-  <q-page class="page-shell results-page">
+  <q-page class="page-shell results-page" :class="{ 'results-page--native': isNativeResultsRuntime }">
     <div class="container-xl">
       <div class="results-toolbar">
         <div>
-          <div class="results-toolbar__kicker">dashboard</div>
+          <div class="results-toolbar__kicker">{{ chatTitle }}</div>
           <h1 class="results-toolbar__title">Resultados</h1>
         </div>
 
@@ -58,9 +58,7 @@
               <div class="q-gutter-lg">
                 <SummaryKpis
                   :stats="stats"
-                  :file-name="analysisStore.currentFile?.name"
                   :file-size="analysisStore.currentFile?.size"
-                  :analyzed-at="analysisStore.currentFile?.analyzedAt"
                 />
 
                 <ParticipantsPanel :participants="stats.participants" />
@@ -101,6 +99,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { Dialog } from 'quasar';
+import { Capacitor } from '@capacitor/core';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import AppEmptyState from 'components/common/AppEmptyState.vue';
@@ -114,11 +113,14 @@ import SummaryKpis from 'components/results/SummaryKpis.vue';
 import TemporalActivity from 'components/results/TemporalActivity.vue';
 import { useAnalysisStore } from 'stores/analysis-store';
 import { useNormalizedStats } from 'src/composables/useNormalizedStats';
+import { formatChatTitle } from 'src/utils/chat';
 
 const router = useRouter();
 const analysisStore = useAnalysisStore();
 const { stats } = storeToRefs(analysisStore);
 const normalized = useNormalizedStats(computed(() => stats.value));
+const chatTitle = computed(() => formatChatTitle(analysisStore.currentFile?.name));
+const isNativeResultsRuntime = ['android', 'ios'].includes(Capacitor.getPlatform());
 
 const tab = ref('overview');
 
@@ -154,10 +156,9 @@ function confirmClear() {
 
 .results-toolbar__kicker {
   color: var(--ws-accent-strong);
-  font-size: 0.74rem;
+  font-size: clamp(0.9rem, 2.8vw, 1.08rem);
   font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: -0.015em;
 }
 
 .results-toolbar__title {
@@ -201,6 +202,10 @@ function confirmClear() {
 
 .results-panels :deep(.q-tab-panel) {
   padding: clamp(16px, 3vw, 26px);
+}
+
+.results-page--native :deep(.section-card__title) {
+  font-size: 0.875rem;
 }
 
 @media (max-width: 720px) {

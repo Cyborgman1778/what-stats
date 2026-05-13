@@ -1,8 +1,5 @@
 <template>
-  <SectionCard
-    title="Participantes"
-    subtitle="detectados en el chat"
-  >
+  <SectionCard title="Participantes">
     <div v-if="participants.length > 0" class="participants-grid">
       <q-chip
         v-for="participant in participants"
