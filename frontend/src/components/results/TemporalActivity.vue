@@ -56,7 +56,7 @@
         </div>
 
         <div class="col-12 col-lg-4">
-          <RankingList :data="topMessagesPerDay" unit="mensajes" />
+          <RankingPodium :items="topMessagesPerDay" unit="mensajes" />
         </div>
       </div>
       <p v-else class="text-muted">Sin ranking.</p>
@@ -68,7 +68,7 @@
 import SectionCard from 'components/common/SectionCard.vue';
 import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
 import LineAreaChart from 'components/common/LineAreaChart.vue';
-import RankingList from 'components/results/RankingList.vue';
+import RankingPodium from 'components/results/RankingPodium.vue';
 import type { DataPoint } from 'src/utils/records';
 
 defineProps<{

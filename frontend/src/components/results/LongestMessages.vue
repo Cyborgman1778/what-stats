@@ -1,38 +1,53 @@
 <template>
   <SectionCard title="Mensajes largos">
-    <q-table
-      v-if="rows.length > 0"
-      flat
-      bordered
-      :rows="rows"
-      :columns="columns"
-      row-key="id"
-      :pagination="{ rowsPerPage: 5 }"
-      :rows-per-page-options="[5, 10, 20]"
-      rows-per-page-label="Filas por página"
-      :pagination-label="getPaginationLabel"
-      class="longest-table"
-    >
-      <template #body-cell-preview="scope">
-        <q-td :props="scope">
-          <span class="message-preview">{{ scope.row.preview }}</span>
-        </q-td>
-      </template>
+    <div v-if="rows.length > 0" class="longest-ranking">
+      <RankingPodium
+        :items="rankingItems"
+        unit="caracteres"
+        selectable
+        @select="openRankingMessage"
+      />
 
-      <template #body-cell-actions="scope">
-        <q-td :props="scope">
-          <q-btn
-            dense
-            flat
-            round
-            color="primary"
-            icon="open_in_full"
-            aria-label="Ver mensaje completo"
-            @click="openMessage(scope.row)"
-          />
-        </q-td>
-      </template>
-    </q-table>
+      <q-table
+        v-if="tableRows.length > 0"
+        flat
+        bordered
+        :rows="tableRows"
+        :columns="columns"
+        row-key="id"
+        :pagination="{ rowsPerPage: 5 }"
+        :rows-per-page-options="[5, 10, 20]"
+        rows-per-page-label="Filas por página"
+        :pagination-label="getPaginationLabel"
+        class="longest-table"
+      >
+        <template #body-cell-rank="scope">
+          <q-td :props="scope">
+            <RankingMedal :position="scope.row.rank" variant="muted" size="list" />
+          </q-td>
+        </template>
+
+        <template #body-cell-preview="scope">
+          <q-td :props="scope">
+            <span class="message-preview">{{ scope.row.preview }}</span>
+          </q-td>
+        </template>
+
+        <template #body-cell-actions="scope">
+          <q-td :props="scope">
+            <q-btn
+              dense
+              flat
+              round
+              color="primary"
+              icon="open_in_full"
+              aria-label="Ver mensaje completo"
+              @click="openMessage(scope.row)"
+            />
+          </q-td>
+        </template>
+      </q-table>
+    </div>
 
     <p v-else class="text-muted">
       Sin mensajes largos.
@@ -65,11 +80,14 @@
 import { computed, ref } from 'vue';
 import type { QTableColumn } from 'quasar';
 import SectionCard from 'components/common/SectionCard.vue';
+import RankingMedal from 'components/results/RankingMedal.vue';
+import RankingPodium from 'components/results/RankingPodium.vue';
 import type { LongestMessage } from 'src/services/api/types';
 import { truncateText } from 'src/utils/format';
 
 interface Row extends LongestMessage {
   id: number;
+  rank: number;
   preview: string;
 }
 
@@ -84,15 +102,35 @@ const rows = computed<Row[]>(() =>
   props.messages.map((message, index) => ({
     ...message,
     id: index,
+    rank: index + 1,
     preview: truncateText(message.Message, 150)
   }))
 );
 
+const rankingItems = computed(() =>
+  rows.value.slice(0, 3).map((row) => ({
+    key: row.id,
+    label: row.Author,
+    value: row.Length
+  }))
+);
+
+const tableRows = computed(() => rows.value.slice(3));
+
+const rankColumnStyle = 'width: 1%; white-space: nowrap; padding-right: 8px;';
 const authorColumnStyle = 'width: 1%; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 8px;';
 const lengthColumnStyle = 'width: 1%; max-width: 90px; white-space: nowrap; padding-left: 8px; padding-right: 10px;';
 const actionColumnStyle = 'width: 1%; white-space: nowrap; padding-left: 8px; padding-right: 10px;';
 
 const columns: QTableColumn<Row>[] = [
+  {
+    name: 'rank',
+    label: '',
+    field: 'rank',
+    align: 'center',
+    style: rankColumnStyle,
+    headerStyle: rankColumnStyle
+  },
   {
     name: 'Author',
     label: 'Autor',
@@ -133,12 +171,23 @@ function openMessage(row: Row) {
   dialogOpen.value = true;
 }
 
+function openRankingMessage(item: { key?: string | number }) {
+  const row = rows.value.find((message) => message.id === item.key);
+
+  if (row) openMessage(row);
+}
+
 function getPaginationLabel(firstRowIndex: number, endRowIndex: number, totalRowsNumber: number) {
   return `${firstRowIndex}-${endRowIndex} de ${totalRowsNumber}`;
 }
 </script>
 
 <style scoped lang="scss">
+.longest-ranking {
+  display: grid;
+  gap: 18px;
+}
+
 .longest-table {
   border-color: var(--ws-border);
   border-radius: var(--ws-radius);

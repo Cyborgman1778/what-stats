@@ -8,7 +8,7 @@
             :height="Math.max(320, topWords.length * 32)"
           />
 
-          <RankingList :data="topWords" unit="veces" />
+          <RankingPodium :items="topWords" unit="veces" />
         </div>
         <p v-else class="text-muted">
           Sin palabras.
@@ -24,7 +24,7 @@
             :height="Math.max(320, topEmojis.length * 32)"
           />
 
-          <RankingList :data="topEmojis" unit="veces" />
+          <RankingPodium :items="topEmojis" unit="veces" />
         </div>
         <p v-else class="text-muted">
           Sin emojis.
@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import SectionCard from 'components/common/SectionCard.vue';
 import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
-import RankingList from 'components/results/RankingList.vue';
+import RankingPodium from 'components/results/RankingPodium.vue';
 import type { DataPoint } from 'src/utils/records';
 
 defineProps<{

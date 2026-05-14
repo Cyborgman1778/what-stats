@@ -10,7 +10,7 @@
       </div>
 
       <div class="col-12 col-lg-4">
-        <RankingList :data="data" unit="mensajes" />
+        <RankingPodium :items="data" unit="mensajes" />
       </div>
     </div>
   </SectionCard>
@@ -20,7 +20,7 @@
 import { computed } from 'vue';
 import SectionCard from 'components/common/SectionCard.vue';
 import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
-import RankingList from 'components/results/RankingList.vue';
+import RankingPodium from 'components/results/RankingPodium.vue';
 import type { DataPoint } from 'src/utils/records';
 
 const props = defineProps<{
