@@ -2,14 +2,7 @@
   <div class="row q-col-gutter-xl">
     <div class="col-12 col-lg-6">
       <SectionCard title="Palabras">
-        <div v-if="topWords.length > 0" class="content-ranking">
-          <HorizontalBarChart
-            :data="topWords"
-            :height="Math.max(320, topWords.length * 32)"
-          />
-
-          <RankingPodium :items="topWords" unit="veces" />
-        </div>
+        <TopRankingBoard v-if="topWords.length > 0" :items="topWords" unit="veces" />
         <p v-else class="text-muted">
           Sin palabras.
         </p>
@@ -18,14 +11,7 @@
 
     <div class="col-12 col-lg-6">
       <SectionCard title="Emojis">
-        <div v-if="topEmojis.length > 0" class="content-ranking">
-          <HorizontalBarChart
-            :data="topEmojis"
-            :height="Math.max(320, topEmojis.length * 32)"
-          />
-
-          <RankingPodium :items="topEmojis" unit="veces" />
-        </div>
+        <TopRankingBoard v-if="topEmojis.length > 0" :items="topEmojis" unit="veces" />
         <p v-else class="text-muted">
           Sin emojis.
         </p>
@@ -36,8 +22,7 @@
 
 <script setup lang="ts">
 import SectionCard from 'components/common/SectionCard.vue';
-import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
-import RankingPodium from 'components/results/RankingPodium.vue';
+import TopRankingBoard from 'components/results/TopRankingBoard.vue';
 import type { DataPoint } from 'src/utils/records';
 
 defineProps<{
@@ -45,10 +30,3 @@ defineProps<{
   topEmojis: DataPoint[];
 }>();
 </script>
-
-<style scoped lang="scss">
-.content-ranking {
-  display: grid;
-  gap: 18px;
-}
-</style>

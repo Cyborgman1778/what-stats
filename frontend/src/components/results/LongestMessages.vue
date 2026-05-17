@@ -1,7 +1,7 @@
 <template>
   <SectionCard title="Mensajes largos">
     <div v-if="rows.length > 0" class="longest-ranking">
-      <RankingPodium
+      <TopRankingBoard
         :items="rankingItems"
         unit="caracteres"
         selectable
@@ -81,7 +81,7 @@ import { computed, ref } from 'vue';
 import type { QTableColumn } from 'quasar';
 import SectionCard from 'components/common/SectionCard.vue';
 import RankingMedal from 'components/results/RankingMedal.vue';
-import RankingPodium from 'components/results/RankingPodium.vue';
+import TopRankingBoard from 'components/results/TopRankingBoard.vue';
 import type { LongestMessage } from 'src/services/api/types';
 import { truncateText } from 'src/utils/format';
 

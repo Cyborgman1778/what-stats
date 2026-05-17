@@ -47,18 +47,7 @@
     </div>
 
     <SectionCard title="Top días">
-      <div v-if="topMessagesPerDay.length > 0" class="row q-col-gutter-lg">
-        <div class="col-12 col-lg-8">
-          <HorizontalBarChart
-            :data="topMessagesPerDay"
-            :height="Math.max(300, topMessagesPerDay.length * 36)"
-          />
-        </div>
-
-        <div class="col-12 col-lg-4">
-          <RankingPodium :items="topMessagesPerDay" unit="mensajes" />
-        </div>
-      </div>
+      <TopRankingBoard v-if="topMessagesPerDay.length > 0" :items="topMessagesPerDay" unit="mensajes" />
       <p v-else class="text-muted">Sin ranking.</p>
     </SectionCard>
   </div>
@@ -66,9 +55,8 @@
 
 <script setup lang="ts">
 import SectionCard from 'components/common/SectionCard.vue';
-import HorizontalBarChart from 'components/common/HorizontalBarChart.vue';
 import LineAreaChart from 'components/common/LineAreaChart.vue';
-import RankingPodium from 'components/results/RankingPodium.vue';
+import TopRankingBoard from 'components/results/TopRankingBoard.vue';
 import type { DataPoint } from 'src/utils/records';
 
 defineProps<{

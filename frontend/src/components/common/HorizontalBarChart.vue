@@ -1,5 +1,12 @@
 <template>
-  <v-chart v-if="data.length > 0" class="chart" :style="{ height: `${height}px` }" :option="option" autoresize />
+  <v-chart
+    v-if="data.length > 0"
+    class="chart"
+    :class="{ 'chart--noninteractive': props.compact }"
+    :style="{ height: `${height}px` }"
+    :option="option"
+    autoresize
+  />
 </template>
 
 <script setup lang="ts">
@@ -12,10 +19,13 @@ const props = withDefaults(
     data: DataPoint[];
     height?: number;
     rankingMode?: boolean;
+    compact?: boolean;
+    maxValue?: number;
   }>(),
   {
     height: 320,
-    rankingMode: true
+    rankingMode: true,
+    compact: false
   }
 );
 
@@ -30,22 +40,29 @@ const option = computed(() => {
   const accentColor = isDark ? '#1597ff' : '#0b7cff';
 
   return {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-      valueFormatter: (value: number) => new Intl.NumberFormat('es-ES').format(value)
-    },
+    tooltip: props.compact
+      ? { show: false }
+      : {
+          trigger: 'axis',
+          axisPointer: { type: 'shadow' },
+          confine: true,
+          valueFormatter: (value: number) => new Intl.NumberFormat('es-ES').format(value)
+        },
     grid: {
-      left: 12,
-      right: 24,
-      top: 12,
-      bottom: 12,
-      containLabel: true
+      left: props.compact ? 0 : 12,
+      right: props.compact ? 0 : 24,
+      top: props.compact ? 10 : 12,
+      bottom: props.compact ? 10 : 12,
+      containLabel: !props.compact
     },
     xAxis: {
       type: 'value',
-      axisLabel: { color: mutedColor },
+      max: props.maxValue,
+      axisLabel: { show: !props.compact, color: mutedColor },
+      axisTick: { show: false },
+      axisLine: { show: false },
       splitLine: {
+        show: !props.compact,
         lineStyle: {
           color: gridColor
         }
@@ -55,6 +72,7 @@ const option = computed(() => {
       type: 'category',
       data: source.map((item) => item.label),
       axisLabel: {
+        show: !props.compact,
         color: textColor,
         width: 150,
         overflow: 'truncate'
@@ -66,9 +84,18 @@ const option = computed(() => {
       {
         type: 'bar',
         data: source.map((item) => item.value),
-        barMaxWidth: 18,
+        silent: props.compact,
+        barMaxWidth: props.compact ? 12 : 18,
+        showBackground: props.compact,
+        emphasis: {
+          disabled: props.compact
+        },
+        backgroundStyle: {
+          color: gridColor,
+          borderRadius: [0, 999, 999, 0]
+        },
         itemStyle: {
-          borderRadius: [0, 9, 9, 0],
+          borderRadius: [0, 999, 999, 0],
           color: accentColor
         }
       }
@@ -76,3 +103,9 @@ const option = computed(() => {
   };
 });
 </script>
+
+<style scoped lang="scss">
+.chart--noninteractive {
+  pointer-events: none;
+}
+</style>
