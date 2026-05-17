@@ -86,7 +86,10 @@
             <q-tab-panel name="messages">
               <div class="q-gutter-lg">
                 <LongestMessages :messages="normalized.longestMessages.value" />
-                <StreaksPanel :streaks="normalized.topStreaks.value" />
+                <StreaksPanel
+                  :streaks="normalized.topStreaks.value"
+                  :messages-per-day="stats.messages_per_day"
+                />
               </div>
             </q-tab-panel>
           </q-tab-panels>
