@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from app.services.whatsapp_chat_parser import parse_chat_to_dataframe
 from app.services import data_analyzer
@@ -7,6 +9,7 @@ from app.schemas.response_models import AnalyzeChatDataResponse
 
 # Creamos el router (un mini-FastAPI para organizar las rutas)
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 @router.post("/upload-chat", response_model=AnalyzeChatDataResponse)
 @limiter.limit(f"{settings.RATE_LIMIT_PER_MINUTE}/minute")
@@ -44,9 +47,9 @@ async def upload_and_analyze_chat(request: Request, file: UploadFile = File(...)
         # Gestión de errores conocidos (RF-07): Por ejemplo, si suben un ZIP vacío
         raise HTTPException(status_code=400, detail=str(e))
         
-    except Exception as e:
+    except Exception:
         # Gestión de errores inesperados (RF-07)
-        print(f"Error procesando archivo: {e}") # En producción se usaría un logger seguro
+        logger.exception("Error procesando archivo de chat")
         raise HTTPException(
             status_code=500, 
             detail="Error interno del servidor al procesar el archivo."

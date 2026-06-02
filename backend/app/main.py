@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -15,7 +16,10 @@ from app.core.rate_limiter import limiter
 app = FastAPI(
     title="WhatStats API",
     description="API para el análisis de chats de WhatsApp orientada a la privacidad",
-    debug=settings.DEBUG
+    debug=settings.DEBUG,
+    docs_url="/docs" if settings.ENABLE_DOCS else None,
+    redoc_url="/redoc" if settings.ENABLE_DOCS else None,
+    openapi_url="/openapi.json" if settings.ENABLE_DOCS else None,
 )
 
 # Registrar el manejador de errores cuando alguien se pasa del límite
@@ -24,13 +28,20 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.include_router(router)
 
+if settings.trusted_hosts:
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=settings.trusted_hosts,
+        www_redirect=False,
+    )
+
 # 2. Configuración de CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],  # Permite GET, POST, etc.
-    allow_headers=["*"],
+    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Accept", "Content-Type", "Origin"],
 )
 
 # 3. Middleware para limitar el tamaño del archivo (Body Size Limit)
@@ -45,6 +56,11 @@ async def limit_upload_size(request: Request, call_next):
             )
     response = await call_next(request)
     return response
+
+
+@app.get("/healthz", include_in_schema=False)
+async def healthz():
+    return {"status": "ok"}
 
 # Endpoint de prueba protegido por Rate Limit
 @app.get("/")

@@ -1,8 +1,8 @@
-fastapi
-uvicorn
-pandas
-python-multipart
-pydantic-settings
-slowapi
-nltk==3.8.1
-emoji==2.10.1
+fastapi==0.136.3
+uvicorn[standard]==0.48.0
+pandas==3.0.3
+python-multipart==0.0.30
+pydantic-settings==2.14.1
+slowapi==0.1.9
+nltk==3.9.4
+emoji==2.15.0

@@ -6,9 +6,6 @@ from datetime import timedelta, date
 from typing import Dict, List, Any
 from app.utils.constants import CHAT_STOPWORDS
 from nltk.corpus import stopwords
-import nltk
-
-nltk.download("stopwords")
 
 #Dividimos los calculos de las diferentes estadisticas en diferentes funciones para un codigo mas limpo
 
