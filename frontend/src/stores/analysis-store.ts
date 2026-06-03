@@ -64,13 +64,47 @@ export const useAnalysisStore = defineStore('analysis', () => {
   const uploadProgress = ref(0);
   const error = ref<NormalizedApiError | null>(null);
   const cooldownUntil = ref<number | null>(null);
+  const cooldownNow = ref(Date.now());
+  let cooldownTimer: ReturnType<typeof setInterval> | null = null;
 
   const hasStats = computed(() => stats.value !== null);
 
   const cooldownRemainingSeconds = computed(() => {
     if (!cooldownUntil.value) return 0;
-    return Math.max(0, Math.ceil((cooldownUntil.value - Date.now()) / 1000));
+    return Math.max(0, Math.ceil((cooldownUntil.value - cooldownNow.value) / 1000));
   });
+
+  function stopCooldownTimer() {
+    if (!cooldownTimer) return;
+
+    clearInterval(cooldownTimer);
+    cooldownTimer = null;
+  }
+
+  function refreshCooldown() {
+    cooldownNow.value = Date.now();
+
+    if (cooldownUntil.value && cooldownNow.value >= cooldownUntil.value) {
+      cooldownUntil.value = null;
+      stopCooldownTimer();
+    }
+  }
+
+  function startCooldown(seconds: number) {
+    stopCooldownTimer();
+
+    const safeSeconds = Math.max(0, seconds);
+
+    cooldownNow.value = Date.now();
+
+    if (safeSeconds === 0) {
+      cooldownUntil.value = null;
+      return;
+    }
+
+    cooldownUntil.value = cooldownNow.value + safeSeconds * 1000;
+    cooldownTimer = setInterval(refreshCooldown, 1000);
+  }
 
   function clearAnalysis() {
     stats.value = null;
@@ -114,7 +148,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
 
       if (normalizedError.status === 429) {
         const seconds = normalizedError.retryAfterSeconds ?? 60;
-        cooldownUntil.value = Date.now() + seconds * 1000;
+        startCooldown(seconds);
       }
 
       throw normalizedError;

@@ -40,7 +40,7 @@
                   v-model.trim="draftApiBaseUrl"
                   outlined
                   dense
-                  placeholder="http://127.0.0.1:8000"
+                  placeholder="https://api.whatstats.net"
                   autocomplete="off"
                   :disable="testingConnection"
                 >

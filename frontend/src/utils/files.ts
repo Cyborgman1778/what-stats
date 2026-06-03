@@ -40,14 +40,16 @@ export function validateChatFile(file: File | null): FileValidationResult {
 
 export function normalizeUploadFileNameForBackend(file: File) {
   const extension = getFileExtension(file.name);
-  const hasUppercaseExtension = /\.(TXT|ZIP)$/.test(file.name);
 
-  if (!hasUppercaseExtension) {
+  if (!ACCEPTED_EXTENSIONS.includes(extension as 'txt' | 'zip')) {
     return file;
   }
 
-  const withoutExtension = file.name.replace(/\.(TXT|ZIP)$/, '');
-  const normalizedName = `${withoutExtension}.${extension}`;
+  const normalizedName = file.name.replace(/\.[^.]+$/, `.${extension}`);
+
+  if (normalizedName === file.name) {
+    return file;
+  }
 
   return new File([file], normalizedName, {
     type: file.type,

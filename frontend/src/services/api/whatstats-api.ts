@@ -6,7 +6,6 @@ import type { HealthcheckResponse, UploadChatResponse } from './types';
 import { normalizeUploadFileNameForBackend } from 'src/utils/files';
 import { sanitizeApiBaseUrl } from 'src/utils/config';
 
-const CAPACITOR_MULTIPART_BOUNDARY = '----WhatStatsCapacitorBoundary';
 const UPLOAD_TIMEOUT_MS = 180000;
 
 function getUploadChatUrl() {
@@ -92,7 +91,6 @@ function uploadChatWithNativeXhr(
     xhr.timeout = UPLOAD_TIMEOUT_MS;
     xhr.responseType = 'text';
     xhr.setRequestHeader('Accept', 'application/json');
-    xhr.setRequestHeader('Content-Type', `multipart/form-data; boundary=${CAPACITOR_MULTIPART_BOUNDARY}`);
 
     xhr.upload.onprogress = (event) => emitNativeUploadProgress(event, onUploadProgress);
 

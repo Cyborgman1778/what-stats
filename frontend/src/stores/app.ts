@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { Dark, LocalStorage } from 'quasar';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8000';
+const DEFAULT_API_BASE_URL = 'https://api.whatstats.net';
 
 const getStoredTheme = () => {
   const storedTheme = LocalStorage.getItem('theme-dark');
