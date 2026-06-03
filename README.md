@@ -1,3 +1,5 @@
+# --- DEV BRANCH ---
+
 # WhatStats Backend
 
 Backend de WhatStats para analizar chats exportados de WhatsApp sin almacenar archivos ni persistir mensajes. La API recibe un `.txt` o `.zip`, procesa el contenido en memoria y devuelve estadisticas listas para consumir desde una web, una app movil o cualquier cliente HTTP.
