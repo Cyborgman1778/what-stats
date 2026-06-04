@@ -43,6 +43,8 @@
                   placeholder="https://api.whatstats.net"
                   autocomplete="off"
                   :disable="testingConnection"
+                  :error="Boolean(backendUrlError)"
+                  :error-message="backendUrlError"
                 >
                   <template #prepend>
                     <q-icon name="dns" />
@@ -50,14 +52,27 @@
                 </q-input>
               </div>
 
-              <q-btn
-                outline
-                color="primary"
-                icon="wifi_tethering"
-                label="Probar conectividad"
-                :loading="testingConnection"
-                @click="testConnectivity"
-              />
+              <div class="developer-options__actions">
+                <q-btn
+                  outline
+                  color="primary"
+                  icon="wifi_tethering"
+                  label="Probar conectividad"
+                  :loading="testingConnection"
+                  @click="testConnectivity"
+                />
+
+                <q-btn
+                  outline
+                  round
+                  color="warning"
+                  icon="warning"
+                  aria-label="Aviso sobre cambiar el backend"
+                  @click="showBackendWarning"
+                >
+                  <q-tooltip>Aviso</q-tooltip>
+                </q-btn>
+              </div>
             </div>
           </q-slide-transition>
         </div>
@@ -72,10 +87,11 @@
 </template>
 
 <script setup lang="ts">
-import { Notify } from 'quasar';
+import { Dialog, Notify } from 'quasar';
 import { ref, watch } from 'vue';
 import { healthcheck } from 'src/services/api/whatstats-api';
 import { usePreferencesStore, type ThemePreference } from 'stores/preferences-store';
+import { sanitizeApiBaseUrl } from 'src/utils/config';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -91,6 +107,7 @@ const developerOptionsEnabled = ref(false);
 const draftApiBaseUrl = ref(preferencesStore.apiBaseUrl);
 const draftTheme = ref<ThemePreference>(preferencesStore.theme);
 const testingConnection = ref(false);
+const backendUrlError = ref('');
 
 const themeOptions = [
   { label: 'Claro', value: 'light' },
@@ -106,14 +123,41 @@ watch(
     developerOptionsEnabled.value = false;
     draftApiBaseUrl.value = preferencesStore.apiBaseUrl;
     draftTheme.value = preferencesStore.theme;
+    backendUrlError.value = '';
   }
 );
 
+watch(draftApiBaseUrl, () => {
+  backendUrlError.value = '';
+});
+
+function getValidatedBackendUrl() {
+  try {
+    const sanitized = sanitizeApiBaseUrl(draftApiBaseUrl.value);
+    draftApiBaseUrl.value = sanitized;
+    backendUrlError.value = '';
+
+    return sanitized;
+  } catch (error) {
+    backendUrlError.value = error instanceof Error ? error.message : 'La URL del backend no es valida.';
+
+    Notify.create({
+      type: 'warning',
+      message: backendUrlError.value
+    });
+
+    return null;
+  }
+}
+
 async function testConnectivity() {
+  const backendUrl = getValidatedBackendUrl();
+  if (!backendUrl) return;
+
   testingConnection.value = true;
 
   try {
-    const response = await healthcheck(draftApiBaseUrl.value);
+    const response = await healthcheck(backendUrl);
 
     Notify.create({
       type: 'positive',
@@ -129,9 +173,24 @@ async function testConnectivity() {
   }
 }
 
+function showBackendWarning() {
+  Dialog.create({
+    title: 'Aviso sobre el backend',
+    message:
+      'Si cambias la direccion del backend, los chats que subas se enviaran a esa direccion. Asegurate de confiar en ese servicio: la configuracion y sus consecuencias son responsabilidad del usuario.',
+    ok: {
+      color: 'warning',
+      label: 'Entendido'
+    }
+  });
+}
+
 function save() {
   if (developerOptionsEnabled.value) {
-    preferencesStore.setBackendUrl(draftApiBaseUrl.value);
+    const backendUrl = getValidatedBackendUrl();
+    if (!backendUrl) return;
+
+    preferencesStore.setBackendUrl(backendUrl);
   }
 
   preferencesStore.setTheme(draftTheme.value);
@@ -198,7 +257,13 @@ function save() {
   border-radius: var(--ws-radius-sm);
 }
 
-.developer-options__body .q-btn {
+.developer-options__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.developer-options__actions .q-btn:first-child {
   justify-self: start;
 }
 

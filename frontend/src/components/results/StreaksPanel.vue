@@ -67,10 +67,16 @@
           </div>
 
           <div class="streak-dialog__actions">
-            <div class="streak-tier-badge" :class="selectedStreakLevel.className">
+            <button
+              type="button"
+              class="streak-tier-badge"
+              :class="selectedStreakLevel.className"
+              aria-label="Ver niveles de racha"
+              @click="openLevelInfo"
+            >
               <span class="streak-tier-badge__label">Nivel</span>
               <span class="streak-tier-badge__value">{{ selectedStreakLevel.label }}</span>
-            </div>
+            </button>
 
             <q-chip
               class="ws-chip streak-duration-chip streak-dialog__duration"
@@ -190,6 +196,38 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="levelInfoOpen">
+      <q-card class="streak-level-info-dialog">
+        <q-card-section class="streak-level-info-dialog__header">
+          <div>
+            <div class="streak-level-info-dialog__title">Niveles de racha</div>
+            <div class="text-muted">segun dias seguidos con actividad</div>
+          </div>
+
+          <q-btn v-close-popup flat round dense icon="close" aria-label="Cerrar niveles de racha" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section class="streak-level-info-dialog__body">
+          <div class="streak-level-list">
+            <div
+              v-for="level in streakLevelInfo"
+              :key="level.label"
+              class="streak-level-list__row"
+            >
+              <span class="streak-level-list__name" :class="level.className">{{ level.label }}</span>
+              <span class="streak-level-list__range">{{ level.range }}</span>
+            </div>
+          </div>
+
+          <p class="streak-level-info-dialog__hint">
+            El nivel se calcula con la duracion total de la racha seleccionada.
+          </p>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </SectionCard>
 </template>
 
@@ -219,6 +257,7 @@ const quasar = useQuasar();
 const weekdays = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 const dialogOpen = ref(false);
+const levelInfoOpen = ref(false);
 const selectedStreak = ref<TopStreak | null>(null);
 const visibleMonthIndex = ref(0);
 const selectedDayIso = ref<string | null>(null);
@@ -283,6 +322,14 @@ const hasMultipleMonths = computed(() => streakMonths.value.length > 1);
 const visibleMonth = computed(() => streakMonths.value[visibleMonthIndex.value] ?? null);
 
 const selectedStreakLevel = computed(() => getStreakLevel(selectedStreak.value?.duration ?? 0));
+
+const streakLevelInfo = [
+  { label: 'Diamante', className: 'streak-level--diamond', minDays: 365, range: '365 dias o mas' },
+  { label: 'Oro', className: 'streak-level--gold', minDays: 150, range: '150 a 364 dias' },
+  { label: 'Plata', className: 'streak-level--silver', minDays: 50, range: '50 a 149 dias' },
+  { label: 'Bronce', className: 'streak-level--bronze', minDays: 10, range: '10 a 49 dias' },
+  { label: 'Gris', className: 'streak-level--gray', minDays: 0, range: 'menos de 10 dias' }
+] as const;
 
 const useInlineDayDetail = computed(() => quasar.screen.width <= 620);
 
@@ -351,6 +398,11 @@ function resetDialog() {
   visibleMonthIndex.value = 0;
   selectedDayIso.value = null;
   messageBubbleOpen.value = false;
+  levelInfoOpen.value = false;
+}
+
+function openLevelInfo() {
+  levelInfoOpen.value = true;
 }
 
 function changeMonth(direction: -1 | 1) {
@@ -404,12 +456,7 @@ function isDateInRange(date: Date, start: Date, end: Date) {
 }
 
 function getStreakLevel(duration: number) {
-  if (duration >= 365) return { label: 'Diamante', className: 'streak-level--diamond' };
-  if (duration >= 150) return { label: 'Oro', className: 'streak-level--gold' };
-  if (duration >= 50) return { label: 'Plata', className: 'streak-level--silver' };
-  if (duration >= 10) return { label: 'Bronce', className: 'streak-level--bronze' };
-
-  return { label: 'Gris', className: 'streak-level--gray' };
+  return streakLevelInfo.find((level) => duration >= level.minDays) ?? streakLevelInfo.at(-1)!;
 }
 
 function formatLongDate(date: Date) {
@@ -582,9 +629,19 @@ function getDayAriaLabel(day: CalendarDay) {
   gap: 2px;
   min-width: 92px;
   padding: 7px 12px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   border: 1px solid var(--ws-border);
   border-radius: 999px;
   background: color-mix(in srgb, var(--ws-surface-muted) 74%, transparent);
+  cursor: pointer;
+}
+
+.streak-tier-badge:hover,
+.streak-tier-badge:focus-visible {
+  border-color: color-mix(in srgb, var(--ws-accent) 46%, var(--ws-border));
+  outline: none;
 }
 
 .streak-tier-badge__label {
@@ -620,6 +677,80 @@ function getDayAriaLabel(day: CalendarDay) {
 
 .streak-tier-badge.streak-level--diamond .streak-tier-badge__value {
   color: #8fe8ff;
+}
+
+.streak-level-info-dialog {
+  width: min(420px, calc(100vw - 28px));
+  color: var(--ws-text);
+  background: var(--ws-surface-solid);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius);
+  box-shadow: var(--ws-shadow-floating);
+}
+
+.streak-level-info-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.streak-level-info-dialog__title {
+  color: var(--ws-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.streak-level-info-dialog__body,
+.streak-level-list {
+  display: grid;
+  gap: 10px;
+}
+
+.streak-level-list__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--ws-table-inset-background);
+  border: 1px solid var(--ws-border-muted);
+  border-radius: var(--ws-radius-sm);
+}
+
+.streak-level-list__name {
+  font-weight: 800;
+}
+
+.streak-level-list__name.streak-level--gray {
+  color: var(--ws-text-muted);
+}
+
+.streak-level-list__name.streak-level--bronze {
+  color: #c98242;
+}
+
+.streak-level-list__name.streak-level--silver {
+  color: #cbd8e6;
+}
+
+.streak-level-list__name.streak-level--gold {
+  color: #f4b84a;
+}
+
+.streak-level-list__name.streak-level--diamond {
+  color: #8fe8ff;
+}
+
+.streak-level-list__range,
+.streak-level-info-dialog__hint {
+  color: var(--ws-text-muted);
+  font-size: 0.84rem;
+}
+
+.streak-level-info-dialog__hint {
+  margin: 2px 0 0;
+  line-height: 1.5;
 }
 
 .streak-dialog__body {

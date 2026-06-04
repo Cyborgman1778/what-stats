@@ -12,7 +12,28 @@ export function sanitizeApiBaseUrl(value: string) {
     return getDefaultApiBaseUrl();
   }
 
-  return trimmed.replace(/\/+$/, '');
+  let url: URL;
+
+  try {
+    url = new URL(trimmed);
+  } catch {
+    throw new Error('Introduce una URL valida para el backend.');
+  }
+
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new Error('La direccion del backend debe empezar por http:// o https://.');
+  }
+
+  if (url.username || url.password) {
+    throw new Error('La direccion del backend no debe incluir usuario ni contrasena.');
+  }
+
+  if (url.search || url.hash) {
+    throw new Error('La direccion del backend no debe incluir parametros ni fragmentos.');
+  }
+
+  const path = url.pathname.replace(/\/+$/, '');
+  return `${url.origin}${path === '/' ? '' : path}`;
 }
 
 export function getInitialApiBaseUrl() {

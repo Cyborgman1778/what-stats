@@ -6,7 +6,7 @@
         <span>Privacidad</span>
       </div>
 
-      <p>El archivo se procesa en memoria. No hay login ni base de datos visible.</p>
+      <p>El archivo se envia al backend configurado para analizarse en memoria. No necesitas cuenta.</p>
 
       <div class="privacy-card__checks">
         <span>memoria</span>

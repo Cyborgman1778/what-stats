@@ -36,7 +36,12 @@ export const usePreferencesStore = defineStore('preferences', () => {
     }
 
     if (typeof storedApiUrl === 'string' && storedApiUrl.trim().length > 0) {
-      apiBaseUrl.value = sanitizeApiBaseUrl(storedApiUrl);
+      try {
+        apiBaseUrl.value = sanitizeApiBaseUrl(storedApiUrl);
+      } catch {
+        LocalStorage.remove(API_BASE_URL_STORAGE_KEY);
+        apiBaseUrl.value = getDefaultApiBaseUrl();
+      }
     }
 
     setApiBaseUrl(apiBaseUrl.value);

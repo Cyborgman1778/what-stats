@@ -75,6 +75,13 @@
           </q-item-section>
           <q-item-section>Resultados</q-item-section>
         </q-item>
+
+        <q-item v-if="isNativeRuntime" clickable v-ripple @click="openPrivacyPolicy">
+          <q-item-section avatar>
+            <q-icon name="shield_lock" />
+          </q-item-section>
+          <q-item-section>Privacidad</q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
@@ -83,10 +90,32 @@
     </q-page-container>
 
     <SettingsDialog v-model="settingsOpen" />
+
+    <q-dialog v-if="isNativeRuntime" v-model="privacyPolicyOpen">
+      <q-card class="privacy-policy-card">
+        <q-card-section class="privacy-policy-card__head">
+          <div>
+            <div class="privacy-policy-card__title">Politicas de privacidad</div>
+            <div class="text-muted">proteccion del analisis</div>
+          </div>
+
+          <q-btn v-close-popup flat round dense icon="close" aria-label="Cerrar politicas de privacidad" />
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section>
+          <p class="privacy-policy-card__text">
+            Privacidad total y automatizada. Tu archivo se procesa 100% en memoria, no guardamos nada en disco. No usamos bases de datos ni registramos tus datos personales, por lo que ningun ser humano vera jamas tus conversaciones. No necesitas crear cuenta y el entorno esta protegido por Cloudflare.
+          </p>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-layout>
 </template>
 
 <script setup lang="ts">
+import { Capacitor } from '@capacitor/core';
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import BrandMark from 'components/common/BrandMark.vue';
@@ -95,9 +124,16 @@ import { usePreferencesStore } from 'stores/preferences-store';
 
 const $q = useQuasar();
 const preferencesStore = usePreferencesStore();
+const isNativeRuntime = Capacitor.isNativePlatform();
 
 const drawerOpen = ref(false);
 const settingsOpen = ref(false);
+const privacyPolicyOpen = ref(false);
+
+function openPrivacyPolicy() {
+  drawerOpen.value = false;
+  privacyPolicyOpen.value = true;
+}
 
 function cycleTheme() {
   if (preferencesStore.theme === 'auto') {
@@ -170,5 +206,34 @@ function cycleTheme() {
 .drawer-surface :deep(.q-router-link--active) {
   color: var(--ws-text);
   background: var(--ws-accent-soft);
+}
+
+.privacy-policy-card {
+  width: min(460px, calc(100vw - 28px));
+  color: var(--ws-text);
+  background: var(--ws-surface);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius);
+  box-shadow: var(--ws-shadow-floating);
+}
+
+.privacy-policy-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.privacy-policy-card__title {
+  color: var(--ws-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.privacy-policy-card__text {
+  margin: 0;
+  color: var(--ws-text-muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
 }
 </style>

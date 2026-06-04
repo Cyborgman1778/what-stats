@@ -13,12 +13,13 @@
                   <span>Privacidad</span>
                 </div>
 
-                <p>El archivo se procesa en memoria. No hay login ni base de datos visible.</p>
+                <p>Privacidad total y automatizada. Tu archivo se procesa 100% en memoria, no guardamos nada en disco. No usamos bases de datos ni registramos tus datos personales, por lo que ningun ser humano vera jamas tus conversaciones. No necesitas crear cuenta y el entorno esta protegido por Cloudflare.</p>
 
                 <div class="home-info-card__chips">
-                  <span>memoria</span>
-                  <span>sin cuenta</span>
-                  <span>limpieza manual</span>
+                  <span>InMemory</span>
+                  <span>SinCuenta</span>
+                  <span>NoLogs</span>
+                  <span>Seguridad</span>
                 </div>
               </article>
 
