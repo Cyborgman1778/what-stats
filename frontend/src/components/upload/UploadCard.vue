@@ -19,7 +19,15 @@
           <q-tooltip>Ayuda</q-tooltip>
         </q-btn>
 
-        <q-chip dense class="secure-chip" icon="lock" label="secured" />
+        <q-chip
+          dense
+          class="secure-chip"
+          icon="lock"
+          label="secured"
+          :clickable="isNativeRuntime"
+          :aria-label="isNativeRuntime ? 'Ver aviso de privacidad' : undefined"
+          @click="openPrivacyInfo"
+        />
       </div>
     </q-card-section>
 
@@ -146,6 +154,23 @@
             <p>
               Cambia todos los participantes por Usuario 1, Usuario 2, etc. antes de mostrar las estadísticas.
             </p>
+
+            <q-separator />
+
+            <div class="advanced-options__demo">
+              <q-btn
+                outline
+                color="primary"
+                icon="auto_awesome"
+                label="Ver demo de resultados"
+                :disable="analysisStore.isAnalyzing"
+                @click="loadDemo"
+              />
+
+              <p>
+                Carga una preview local con datos de ejemplo para probar todas las estadísticas sin subir tu chat.
+              </p>
+            </div>
           </div>
         </q-expansion-item>
       </q-form>
@@ -156,6 +181,27 @@
       <div class="q-mt-sm text-weight-medium">Procesando</div>
     </q-inner-loading>
   </q-card>
+
+  <q-dialog v-if="isNativeRuntime" v-model="privacyInfoOpen">
+    <q-card class="privacy-info-card">
+      <q-card-section class="privacy-info-card__head">
+        <div>
+          <div class="privacy-info-card__title">Privacidad</div>
+          <div class="text-muted">proteccion del analisis</div>
+        </div>
+
+        <q-btn v-close-popup flat round dense icon="close" aria-label="Cerrar aviso de privacidad" />
+      </q-card-section>
+
+      <q-separator />
+
+      <q-card-section>
+        <p class="privacy-info-card__text">
+          Privacidad total y automatizada. Tu archivo se procesa 100% en memoria, no guardamos nada en disco. No usamos bases de datos ni registramos tus datos personales, por lo que ningun ser humano vera jamas tus conversaciones. No necesitas crear cuenta y el entorno esta protegido por Cloudflare.
+        </p>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 
   <q-dialog v-model="helpOpen">
     <q-card class="export-help-card">
@@ -227,6 +273,7 @@ const nativeImportStore = useNativeImportStore();
 const isNativeRuntime = Capacitor.isNativePlatform();
 const anonymizeUsers = ref(false);
 const helpOpen = ref(false);
+const privacyInfoOpen = ref(false);
 
 const {
   selectedFile,
@@ -248,6 +295,17 @@ function applyPendingNativeFile() {
 }
 
 watch(() => nativeImportStore.pendingFile, applyPendingNativeFile, { immediate: true });
+
+function openPrivacyInfo() {
+  if (!isNativeRuntime) return;
+
+  privacyInfoOpen.value = true;
+}
+
+function loadDemo() {
+  const stats = analysisStore.loadDemoAnalysis({ anonymizeUsers: anonymizeUsers.value });
+  emit('completed', stats);
+}
 
 async function handleSubmit() {
   const stats = await submit({ anonymizeUsers: anonymizeUsers.value });
@@ -438,6 +496,15 @@ async function handleSubmit() {
   line-height: 1.5;
 }
 
+.advanced-options__demo {
+  display: grid;
+  gap: 8px;
+}
+
+.advanced-options__demo .q-btn {
+  justify-self: start;
+}
+
 .upload-actions {
   display: flex;
   flex-wrap: wrap;
@@ -465,6 +532,35 @@ async function handleSubmit() {
   border: 1px solid var(--ws-border);
   border-radius: var(--ws-radius);
   box-shadow: var(--ws-shadow-floating);
+}
+
+.privacy-info-card {
+  width: min(460px, calc(100vw - 28px));
+  color: var(--ws-text);
+  background: var(--ws-surface);
+  border: 1px solid var(--ws-border);
+  border-radius: var(--ws-radius);
+  box-shadow: var(--ws-shadow-floating);
+}
+
+.privacy-info-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.privacy-info-card__title {
+  color: var(--ws-text);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.privacy-info-card__text {
+  margin: 0;
+  color: var(--ws-text-muted);
+  font-size: 0.94rem;
+  line-height: 1.65;
 }
 
 .export-help-card__head {

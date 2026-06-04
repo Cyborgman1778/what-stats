@@ -4,6 +4,7 @@ import type { AxiosProgressEvent } from 'axios';
 import type { ChatStatsPayload } from 'src/services/api/types';
 import type { NormalizedApiError } from 'src/services/api/api-errors';
 import { uploadChat } from 'src/services/api/whatstats-api';
+import { createDemoChatStats } from 'src/utils/demo-stats';
 
 interface CurrentFileMeta {
   name: string;
@@ -158,6 +159,26 @@ export const useAnalysisStore = defineStore('analysis', () => {
     }
   }
 
+  function loadDemoAnalysis(options: AnalyzeFileOptions = {}) {
+    const demoStats = createDemoChatStats();
+    const nextStats = options.anonymizeUsers ? anonymizeChatStats(demoStats) : demoStats;
+
+    stopCooldownTimer();
+    cooldownUntil.value = null;
+    error.value = null;
+    isAnalyzing.value = false;
+    uploadProgress.value = 0;
+    stats.value = nextStats;
+    currentFile.value = {
+      name: 'WhatsApp Chat con Demo de Resultados.txt',
+      size: 2_785_280,
+      type: 'Demo de resultados',
+      analyzedAt: new Date().toISOString()
+    };
+
+    return nextStats;
+  }
+
   return {
     stats,
     currentFile,
@@ -168,6 +189,7 @@ export const useAnalysisStore = defineStore('analysis', () => {
     hasStats,
     cooldownRemainingSeconds,
     analyzeFile,
+    loadDemoAnalysis,
     clearAnalysis,
     clearError
   };
