@@ -37,11 +37,20 @@
       <q-form class="q-gutter-md" @submit.prevent="handleSubmit">
         <div
           class="drop-zone"
-          :class="{ 'drop-zone--active': isDragging }"
+          :class="{
+            'drop-zone--active': isDragging,
+            'drop-zone--clickable': isNativeRuntime && !analysisStore.isAnalyzing
+          }"
+          :role="isNativeRuntime ? 'button' : undefined"
+          :tabindex="isNativeRuntime && !analysisStore.isAnalyzing ? 0 : undefined"
+          :aria-label="isNativeRuntime ? 'Seleccionar archivo de WhatsApp' : undefined"
+          @click="openNativeFilePicker"
           @dragenter.prevent="isDragging = true"
           @dragover.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
           @drop.prevent="onDrop"
+          @keydown.enter.prevent="openNativeFilePicker"
+          @keydown.space.prevent="openNativeFilePicker"
         >
           <div class="drop-zone__visual" aria-hidden="true">
             <div class="drop-zone__icon">
@@ -54,6 +63,7 @@
           </div>
 
           <q-file
+            ref="filePicker"
             :model-value="selectedFile"
             class="drop-zone__input"
             outlined
@@ -264,6 +274,10 @@ import { useNativeImportStore } from 'stores/native-import-store';
 import type { ChatStatsPayload } from 'src/services/api/types';
 import { formatBytes } from 'src/utils/format';
 
+interface FilePickerRef {
+  pickFiles: () => void;
+}
+
 const emit = defineEmits<{
   completed: [stats: ChatStatsPayload];
 }>();
@@ -274,6 +288,7 @@ const isNativeRuntime = Capacitor.isNativePlatform();
 const anonymizeUsers = ref(false);
 const helpOpen = ref(false);
 const privacyInfoOpen = ref(false);
+const filePicker = ref<FilePickerRef | null>(null);
 
 const {
   selectedFile,
@@ -300,6 +315,15 @@ function openPrivacyInfo() {
   if (!isNativeRuntime) return;
 
   privacyInfoOpen.value = true;
+}
+
+function openNativeFilePicker(event: MouseEvent | KeyboardEvent) {
+  if (!isNativeRuntime || analysisStore.isAnalyzing) return;
+
+  const target = event.target;
+  if (target instanceof Element && target.closest('.drop-zone__input')) return;
+
+  filePicker.value?.pickFiles();
 }
 
 function loadDemo() {
@@ -401,6 +425,16 @@ async function handleSubmit() {
   transform: translateY(-2px);
   background: var(--ws-dropzone-active-background);
   border-color: var(--ws-accent);
+}
+
+.drop-zone--clickable {
+  cursor: pointer;
+}
+
+.drop-zone--clickable:focus-visible {
+  border-color: var(--ws-accent);
+  outline: 2px solid color-mix(in srgb, var(--ws-accent) 44%, transparent);
+  outline-offset: 3px;
 }
 
 .drop-zone__visual {

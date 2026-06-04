@@ -78,7 +78,7 @@
 
         <q-item v-if="isNativeRuntime" clickable v-ripple @click="openPrivacyPolicy">
           <q-item-section avatar>
-            <q-icon name="shield_lock" />
+            <q-icon name="lock" />
           </q-item-section>
           <q-item-section>Privacidad</q-item-section>
         </q-item>
