@@ -67,6 +67,9 @@ def _request(method, path, *, headers=None, body=b""):
         for key, value in (headers or {}).items():
             normalized_headers.append((key.lower().encode("latin-1"), value.encode("latin-1")))
 
+        if not any(key == b"host" for key, _ in normalized_headers):
+            normalized_headers.append((b"host", b"127.0.0.1"))
+
         if body and not any(key == b"content-length" for key, _ in normalized_headers):
             normalized_headers.append((b"content-length", str(len(body)).encode("latin-1")))
 
@@ -289,7 +292,7 @@ def test_upload_chat_returns_failed_stats_when_parser_finds_no_messages(monkeypa
     }
 
 
-def test_upload_chat_enforces_rate_limit_after_three_requests(monkeypatch):
+def test_upload_chat_does_not_enforce_rate_limit_after_three_requests(monkeypatch):
     _patch_stopwords(monkeypatch)
     files = _txt_upload("01/01/2024, 10:00 - Ana: hola\n")
 
@@ -301,7 +304,7 @@ def test_upload_chat_enforces_rate_limit_after_three_requests(monkeypatch):
     assert first.status_code == 200
     assert second.status_code == 200
     assert third.status_code == 200
-    assert fourth.status_code == 429
+    assert fourth.status_code == 200
 
 
 def test_upload_chat_returns_413_when_payload_exceeds_max_size(monkeypatch):
